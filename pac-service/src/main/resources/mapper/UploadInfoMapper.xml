@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.UploadInfoDao">
+<resultMap id="BaseResultMap" type="com.bocom.domain.upload.UploadInfo" >
+	<id column="id" property="id" jdbcType="INTEGER" />
+	<result column="name" property="name" jdbcType="VARCHAR" />
+	<result column="url" property="url" jdbcType="VARCHAR" />
+	<result column="createTime" property="createTime" jdbcType="TIMESTAMP" />
+	<result column="refId" property="refId" jdbcType="INTEGER" />
+	<result column="type" property="type" jdbcType="INTEGER" />
+</resultMap>
+
+<insert id="insert" parameterType="com.bocom.domain.upload.UploadInfo" useGeneratedKeys="true" keyProperty="id">
+insert into TD_UPLOAD (id, name, url, createTime ,refId ,type )
+values(	
+		#{id,jdbcType=INTEGER}, 
+		#{name,jdbcType=VARCHAR}, 
+		#{url,jdbcType=VARCHAR}, 
+		#{createTime,jdbcType=TIMESTAMP},
+		#{refId,jdbcType=INTEGER},
+		#{type,jdbcType=INTEGER} 
+)
+</insert>
+
+<select id="getByRefId" resultMap="BaseResultMap">
+select 
+u.id,u.name,u.url,u.createTime,u.refId,u.type
+from TD_UPLOAD u
+where u.refId=#{0} AND u.type=#{1}
+</select>
+
+<delete id="deleteByRefId">
+DELETE FROM TD_UPLOAD WHERE refId=#{0} AND type=#{1}
+</delete>
+
+</mapper>

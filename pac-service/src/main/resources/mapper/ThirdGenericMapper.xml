@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.ThirdGenericDao">
+
+	<select id="listTask" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select
+		rwid,gzbsrwid,rwms,gzbsrwms
+		from t_rw_gzbs
+	</select>
+	
+	<select id="listCheckPointData" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select
+		<if test="filters != null">
+			t.time time,
+		</if>
+		sum(t.checkedtruck + t.checkedbus) jcclt,
+		sum(t.checkedpeople) jcryt,
+		sum(t.shangfang) ffryt,
+		sum(t.terrorist + t.heresy + t.druguser + t.escaped +t.otherillegalperson) fzxyrt,
+		sum(t.simulategun) fzqt,
+		sum(t.escaped) tft,
+		sum(t.knife) gzdjt
+		from wd_checkpoint_victory t, t_rw_usersb u
+		where t.checkpointid=u.userid and t.verify = 1
+		<if test="beginTime != null">
+			AND t.time&gt;=#{beginTime}
+		</if>
+		<if test="endTime != null">
+			AND t.time&lt;=#{endTime}
+		</if>
+		<if test="taskId != null">
+			AND u.rwid=#{taskId}
+		</if>
+		<if test="filters != null">
+		group by t.time
+		</if>
+	</select>
+
+	<select id="listSocietyData" parameterType="java.util.Map"
+		resultType="java.util.Map">
+		select
+		<if test="filters != null">
+			t.time time,
+		</if>
+		sum(t.doubtcar) jccld,
+		sum(t.doubtpeople) pcryd,
+		sum(t.catchedcrimer) tfd,
+		sum(t.currentcrime) cpxxajd,
+		sum(t.currentcrimer) fzxyrd,
+		sum(t.localperson) wkzdryd,
+		sum(t.airplane) mpdmxd
+		from wd_society_control t, t_rw_usersb u
+		where t.checkpointid=u.userid and t.verify = 1
+		<if test="beginTime != null">
+			AND t.time&gt;=#{beginTime}
+		</if>
+		<if test="endTime != null">
+			AND t.time&lt;=#{endTime}
+		</if>
+		<if test="taskId != null">
+			AND u.rwid=#{taskId}
+		</if>
+		<if test="filters != null">
+		group by t.time
+		</if>
+	</select>
+</mapper>

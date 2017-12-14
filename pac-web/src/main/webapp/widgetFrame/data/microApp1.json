@@ -1,0 +1,9 @@
+[{
+	"name":"xx市人口信息查询",
+	"id":"peopleSearch",
+	"url":"app/1_finish.html"
+},{
+	"name":"chart2",
+	"id":"chart2",
+	"url":"app/2/widget_116.html"
+}]

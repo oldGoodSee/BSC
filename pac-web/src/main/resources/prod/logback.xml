@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+  <property name="LOG_HOME" value="${catalina.base}/logs/pwc-web/"/> 
+  <appender name="DC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${LOG_HOME}devicecontrol.log</File>
+    <encoder>
+      <pattern>%date [%level] [%thread] %logger{80} [%file : %line] %msg%n</pattern>
+	  <charset>UTF-8</charset> 
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_HOME}/devicecontrol.log.%d{yyyy-MM-dd}</fileNamePattern>
+    </rollingPolicy>
+  </appender>
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <Target>System.out</Target>
+    <encoder>
+      <pattern>%date [%level] [%thread] %logger{80} [%file : %line] %msg%n</pattern>
+	  <charset>UTF-8</charset> 
+    </encoder>
+  </appender>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <File>${LOG_HOME}/vod.log</File>
+    <encoder>
+      <pattern>%date [%level] [%thread] %logger{80} [%file : %line] %msg%n</pattern>
+	  <charset>UTF-8</charset> 
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    <fileNamePattern>${LOG_HOME}/vod.log.%d{yyyy-MM-dd}</fileNamePattern>
+    </rollingPolicy>
+  </appender>
+  <logger name="org.springframework" level="error"/>
+  <logger name="com.thunisoft.crs" level="error"/>
+  <logger name="jdbc.connection" level="OFF"/>
+  <logger name="com.thunisoft.artery" level="error"/>
+  <logger name="com.thunisoft.cas.service.devicecontrol" level="debug">
+    <appender-ref ref="DC"/>
+  </logger>
+  <logger name="org.apache" level="error"/>
+  <logger name="jdbc.resultset" level="OFF"/>
+  <logger name="com.thunisoft.summer" level="warn"/>
+  <logger name="org.hibernate" level="error"/>
+  <logger name="jdbc.audit" level="OFF"/>
+  <logger name="com.thunisoft.test" level="error"/>
+  <logger name="jdbc.sqlonly" level="INFO"/>
+  <logger name="jdbc.sqltiming" level="DEBUG"/>
+  <logger name="org.quartz.simpl" level="error"/>
+  <root level="debug">
+    <appender-ref ref="Console"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>

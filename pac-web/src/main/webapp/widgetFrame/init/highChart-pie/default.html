@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+	<script type="text/javascript" src="/pac-web/widgetFrame/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/init/resources/layer/layer.js"></script>
+	<script type="text/javascript" src="/pac-web/widgetFrame/init/resources/Highcharts-5.0.7/code/highcharts.js"></script>
+	<script type="text/javascript" src="/pac-web/widgetFrame/init/resources/Highcharts-5.0.7/code/highcharts-more.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/js/edit-1.0.js" id="editJs"></script>
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="/pac-web/widgetFrame/js/html5shiv.min.js"></script>
+      	<script src="/pac-web/widgetFrame/js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+  	<select id="city">
+  		<option value="0">南京</option>
+  		<option value="1">苏州</option>
+  		<option value="2">南通</option>
+  	</select>
+    <div style="height:100%; min-width: 400px; overflow: hidden;" id="container" class="ajax-data" ></div>
+  </body>
+  <script type="text/javascript" id="configJs"></script>
+  <script type="text/javascript" id="mainJs">
+    var init = new init();
+  	$(document).on("ready",function(){
+  		var result;
+  		init.setFn([{
+  	      fn: function() {
+  	        $.ajax({
+  	          dataType: "json",
+  	          //type: "POST",
+  	          url: init.getUrl("getChartData"),
+  	          cache: false,
+  	          success: function(res) {
+  	        	result = res.series;
+  	              var cityNum = parseInt($("#city").val());
+  	              var list = [];
+  	              var data = res.series[cityNum];
+  	              for(var i=0;i<data.data.length;i++){
+  	            	  if($.inArray(data.data[i].code,init.getColCodes("getChartData")) != -1){
+  	  	            	 list.push([data.data[i].name,data.data[i].data]);
+  	            	  }
+  	              }
+  	            createChart(list);
+  	          },
+  	          error: function() {
+  	            layer.alert("获取接口返回信息失败！");
+  	          }
+  	        });
+  	      },
+  	      urlId: "getChartData",
+  	      autoRun:true
+  	    }]);
+  		
+  		init.setUrl([{
+  	      info: "获取饼图的数据信息",
+  	      id: "getChartData",
+  	      type: "chart",
+  	      renderTo: "container",
+  	      colSet: {
+  	       	type:1 //0表示需要绑定页面dom，1表示通过js控件动态生成，根据选择的colNames自动进行，-1表示不绑定任何dom，仅用于获取数据，也不指定任何列
+  	      }
+  	    }]);
+  		
+  		$("#city").on("change",function(){
+  			if(!result){
+  				return;
+  			}
+  			var list = [];
+  			var data = result[parseInt($(this).val())];
+            for(var i=0;i<data.data.length;i++){
+          	  if($.inArray(data.data[i].code,init.getColCodes("getChartData")) != -1){
+	            	 list.push([data.data[i].name,data.data[i].data]);
+          	  }
+            }
+            createChart(list);
+  		})
+  		
+  		 init.init();
+  	});
+  	
+  	function createChart(list){
+  		 $('#container').highcharts({
+             chart: {
+                 plotBackgroundColor: null,
+                 plotBorderWidth: null,
+                 plotShadow: false
+             },
+	  	      credits: {
+	  	         enabled: false
+	  	      },
+             title: {
+                 text: init.getColNames("getChartData"),
+             },
+             tooltip: {
+                 headerFormat: '{series.name}<br>',
+                 pointFormat: '{point.name}: <b>{point.percentage:.1f}%</b>'
+             },
+             plotOptions: {
+                 pie: {
+                     allowPointSelect: true,
+                     cursor: 'pointer',
+                     dataLabels: {
+                         enabled: true,
+                         format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                         style: {
+                             color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                         }
+                     }
+                 }
+             },
+             series: [{
+                 type: 'pie',
+                 name: init.getColNames("getChartData"),
+                 data: list
+             }]
+         });
+  	}
+  </script>
+</html>

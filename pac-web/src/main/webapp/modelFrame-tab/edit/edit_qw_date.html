@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link rel="stylesheet" href="/PAC-M/widgetFrame/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="/PAC-M/widgetFrame/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css"/>
+	<style type="text/css">
+		body{
+			overflow-x:hidden;
+		}
+		fieldset{
+			background-color: #eee;
+			border:1px solid #ccc;
+			padding:10px;
+			margin:10px;
+		}
+		fieldset label{
+			font-size: 18px;
+		}
+	</style>
+	<script type="text/javascript" src="/PAC-M/modelFrame-tab/js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="/PAC-M/modelFrame-tab/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/PAC-M/widgetFrame/init/resources/xhEditor-master/xheditor.js"></script>
+	<script type="text/javascript" src="/PAC-M/widgetFrame/init/resources/xhEditor-master/xheditor_lang/zh-cn.js"></script>
+	<script type="text/javascript" src="/PAC-M/widgetFrame/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>
+	<!--[if lt IE 9]>
+	<script src="/PAC-M/modelFrame-tab/js/html5shiv.min.js"></script>
+	<script src="/PAC-M/modelFrame-tab/js/respond.min.js"></script>
+	<![endif]-->
+</head>
+
+<body>
+	<div id="main"></div>
+	<form class="form-horizontal" id="form" style="padding-top:10px;">
+		<div class="form-group" id="add">
+			<div class="col-xs-12">
+				<button type="button" class="btn btn-default" style="margin-left:10px;">新增日期分组</button>
+			</div>
+	  </div>
+   	<div class="form-group" id="btn">
+	    <div style="float:right; margin: 0 25px;">
+	      <button type="button" class="btn btn-default" id="submit">确认修改</button>
+	    </div>
+	  </div>
+	</form>
+</body>
+<script type="text/javascript">
+  var p = window.parent;
+	var editingFrame = p.editingWidget.frame[p.editingWidgetIndex];
+  var data = deepClone(p.editingWidget.frame[p.editingWidgetIndex].data);
+	$(document).on("ready",function() {
+		$.extend(XHEDITOR.settings);
+		var innerStr = "";
+		for(var i=0;i<data.length;i++){
+			innerStr += '<fieldset><label><input type="text" class="form-control" value="'+data[i].date+'" disabled /></label>';
+			for(var j=0;j<data[i].content.length;j++){
+				innerStr += '<div class="form-group">'+
+											'<div class="col-xs-10">'+
+												'<textarea id="elm_'+i+'_'+j+'" name="elm'+i+'_'+j+'" rows="8" cols="80" style="width: 100%"></textarea>'+
+											'</div>'+
+											'<div class="col-xs-2">'+
+												'<button type="button" class="btn btn-default">删除</button>'+
+											'</div>'+
+										'</div>';
+			}
+			innerStr += '<div class="form-group">'+
+										'<button type="button" class="btn btn-default" style="margin-left: 15px;">新增</button> <button type="button" class="btn btn-default">删除当天全部信息</button>'+
+									'</div>'+
+									'</fieldset>';
+		}
+		$("#add").before(innerStr);
+		textareas = $("#form").find("textarea");
+		for(var i = 0;i<textareas.length;i++){
+			var arr = textareas.eq(i).attr("id").split("_");
+			var editor = textareas.eq(i).xheditor({skin:'o2007blue',background:'#006699',tools:'Cut,Copy,Paste,Pastetext,|,Fontface,FontSize,Bold,Italic,Underline,|,FontColor,BackColor,|,Align,List,Outdent,Indent,Removeformat'});
+			editor.setSource(data[arr[1]].content[arr[2]]);
+		}
+		
+		$("#form").on("click","button",function(e){
+			var btn = $(e.currentTarget);
+			switch(btn.html()){
+				case "删除":
+					btn.parent().parent().remove();
+					break;
+				case "删除当天全部信息":
+					btn.parent().parent().remove();
+					break;
+				case "新增":
+					var container = $(this).parent().parent();
+					var innerStr = '<div class="form-group">'+
+														'<div class="col-xs-10">'+
+															'<textarea rows="8" cols="80" style="width: 100%"></textarea>'+
+														'</div>'+
+														'<div class="col-xs-2">'+
+															'<button class="btn btn-default">删除</button>'+
+														'</div>'+
+													'</div>';
+					$(this).parent().before(innerStr);
+					var editor = container.find("textarea").last().xheditor({skin:'o2007blue',background:'#006699',tools:'Cut,Copy,Paste,Pastetext,|,Fontface,FontSize,Bold,Italic,Underline,|,FontColor,BackColor,|,Align,List,Outdent,Indent,Removeformat'});
+					break;
+				case "新增日期分组":
+					var container = $(this).parent().parent();
+					var innerStr = '<fieldset><label><input type="text" class="form-control" value="" /></label>'+
+														'<div class="form-group">'+
+															'<button type="button" class="btn btn-default" style="margin-left: 15px;">新增</button> <button type="button" class="btn btn-default">删除当天全部信息</button>'+
+														'</div>'+
+													'</fieldset>';
+					$(this).parent().parent().before(innerStr);
+					$("input").last().datetimepicker({
+						pickerPosition:"bottom-left",
+						format: 'yyyy-mm-dd',
+						language:"zh",
+						minView: "month",
+						autoclose:true
+					});
+					break;
+				default:
+					break;
+			}
+		});
+		
+		$("#submit").on("click",function(){
+			var newData = [];
+			var fieldsets = $("#form").find("fieldset");
+			var oldV = p.$("#"+editingFrame.frameId+"_dateSel").val();
+			var defaultV;
+			for(var i = 0;i<fieldsets.length;i++){
+				var textareas = fieldsets.eq(i).find("textarea");
+				if(textareas.length>0){
+					var obj = {date:fieldsets.eq(i).find("input").eq(0).val(),content:[]};
+					if(oldV == obj.date){
+						defaultV = oldV;
+					}
+					for(var j=0;j<textareas.length;j++){
+						obj.content.push(textareas.eq(j).val());
+					}
+					var index = newData.length;
+					for(var k=0;k<newData.length;k++){
+						if(newData[k].date>obj.date){
+							index = k;
+							break;
+						}
+					}
+					newData.splice(index,0,obj);
+				}
+			}
+			
+			editingFrame.data = newData;
+			editingFrame.useUserData = true;
+			p.$("#"+editingFrame.frameId+"_tools").find("li").eq(0).find("a").addClass("menu-active");
+			var frame = p.$("#"+editingFrame.frameId)[0].contentWindow;
+			frame.res = newData;
+			if(defaultV){
+				frame.createText(defaultV,0);
+			}else{
+				frame.createText(formatDate(new Date()),0);
+			}
+			p.editingWidget = null;
+			p.editingWidgetIndex = null;
+			p.layer.close(p.editingLayer);
+		});
+		
+	});
+	
+	//深度克隆
+	function deepClone(obj){
+    var result,oClass=isClass(obj);
+    //确定result的类型
+    if(oClass==="Object"){
+      result={};
+    }else if(oClass==="Array"){
+      result=[];
+    }else{
+      return obj;
+    }
+    for(key in obj){
+			var copy=obj[key];
+			if(isClass(copy)=="Object"){
+				result[key]=arguments.callee(copy);//递归调用
+			}else if(isClass(copy)=="Array"){
+				result[key]=arguments.callee(copy);
+			}else{
+				result[key]=obj[key];
+			}
+    }
+    return result;
+	}
+	//返回传递给他的任意对象的类
+	function isClass(o){
+		if(o===null) return "Null";
+		if(o===undefined) return "Undefined";
+		return Object.prototype.toString.call(o).slice(8,-1);
+	}
+	
+	function formatDate(date){
+		var year = date.getFullYear();
+		var month = date.getMonth()+1;
+		if(month<10){
+			month = "0"+month;
+		}
+		var day = date.getDate();
+		if(day<10){
+			day = "0"+day;
+		}
+		return year+'-'+month+'-'+day;
+	}
+</script>
+</html>

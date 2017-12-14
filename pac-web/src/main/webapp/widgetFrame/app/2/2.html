@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+	<link rel="stylesheet" href="../../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../../css/edit.css" id="editCss" />
+	
+	<script type="text/javascript" src="../../js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../js/layer/layer.js"></script>
+	<script type="text/javascript" src="../2/Highcharts-5.0.7/code/highcharts.js"></script>
+	<script type="text/javascript" src="../2/Highcharts-5.0.7/code/highcharts-more.js"></script>
+	<script type="text/javascript" src="../../js/tool.js"></script>
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="../../js/html5shiv.min.js"></script>
+      	<script src="../../js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+    <div style="height:100%" id="container" class="ajax-data" chart=true></div>
+  </body>
+  <script type="text/javascript" id="configJs">
+  	var config = {}
+  </script>
+  <script type="text/javascript" id="mainJs">
+  	$(document).on("ready",function(){
+  		ajaxChart($("#container"));
+  		/*
+  		 $('#container').highcharts({
+		        chart: {
+		            polar: true,
+		            type: 'line'
+		        },
+		        title: {
+		            text: 'Budget vs spending',
+		            x: -80
+		        },
+		        pane: {
+		            size: '80%'
+		        },
+		        xAxis: {
+		            categories: ['{{col1}}', '{{col2}}', '{{col3}}', '{{col4}}','{{col5}}', '{{col6}}'],
+		            tickmarkPlacement: 'on',
+		            lineWidth: 0,
+		            labels:{
+		                formatter:function() {
+		                    return " <a href='javascript:void(0)' class='clickable-link' value='"+this.value+"'>"+config.params[this.value]+"</a>";
+		                },
+		                useHTML:true
+		            }
+		        },
+		        yAxis: {
+		            gridLineInterpolation: 'polygon',
+		            lineWidth: 0,
+		            min: 0
+		        },
+		        tooltip: {
+		            shared: true,
+		            pointFormat: '<span style="color:{series.color}">{series.name}: <b>${point.y:,.0f}</b><br/>'
+		        },
+		        legend: {
+		            align: 'right',
+		            verticalAlign: 'top',
+		            y: 70,
+		            layout: 'vertical'
+		        },
+		        series: [{
+		            name: 'Allocated Budget',
+		            data: [43000, 19000, 60000, 35000, 17000, 10000],
+		            pointPlacement: 'on'
+		        }, {
+		            name: 'Actual Spending',
+		            data: [50000, 39000, 42000, 31000, 26000, 14000],
+		            pointPlacement: 'on'
+		        }]
+		    });
+  		*/
+  	});
+  </script>
+  <script type="text/javascript" src="../../js/edit.js" id="editJs"></script>
+</html>

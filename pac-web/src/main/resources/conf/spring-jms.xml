@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd">
+    
+    <context:component-scan base-package="com.bocom.activemq"/>
+    
+	 <!-- 连接池配置 -->
+      <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
+        <property name="connectionFactory">
+          <bean class="org.apache.activemq.ActiveMQConnectionFactory">
+            <property name="brokerURL">
+              <value>${jms.broker.url}</value>
+            </property>
+          </bean>
+        </property>
+        <property name="maxConnections" value="${jms.jmsContainer.maxConnections}" />
+        <property name="maximumActiveSessionPerConnection" value="${jms.jmsContainer.maximumActive}" />
+        <property name="idleTimeout" value="${jms.jmsContainer.idleTimeout}" />
+        <property name="expiryTimeout" value="${jms.jmsContainer.expiryTimeout}" />
+      </bean>
+    <!-- 连接工厂 -->
+    <bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
+        <property name="targetConnectionFactory" ref="pooledConnectionFactory"/>  
+    </bean>  
+      
+    <!-- JMS事务 --> 
+<!--      <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">   -->
+<!--         <property name="connectionFactory" ref="connectionFactory" />   -->
+<!--     </bean>    -->
+<!--     <tx:annotation-driven transaction-manager="jmsTransactionManager" />   -->
+    
+    
+      
+<!--     Queue消息发送者(JMS Message Producers) -->                                                                                                      
+    <!-- JmsQueueTemplate : Spring封装类，可用于创造消息、发送消息、接收消息等 -->
+    <bean id="jmsQueueTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory" /> 
+        <property name="defaultDestination" ref="defaultDestination" />  
+        <property name="receiveTimeout" value="${jms.queue.receiveTimeout}" />
+        <property name="pubSubDomain" value="false" />
+    </bean>
+    <bean id="defaultDestination" class="org.apache.activemq.command.ActiveMQQueue">  
+        <constructor-arg index="0" value="${jms.producer.queue.name}" />  
+    </bean> 
+        
+    
+    
+<!--     Queue消息接收者(JMS Message listener)       -->
+<!--     <bean id="queueMessageListener" class="com.bocom.activemq.QueueMessageListener" />
+    <bean id="jmsQueueContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+         <property name="messageListener" ref="queueMessageListener" />
+         <property name="connectionFactory" ref="connectionFactory"/>
+         <property name="destinationName" value="${jms.listener.queue.name}"/>
+         <property name="concurrency" value="${jms.listener.queue.concurrency}"/>
+         <property name="pubSubDomain" value="false" />
+    </bean>   -->
+    
+<!--     Topic消息发送者(JMS Message Producers)  -->    
+    <bean id="jmsTopicTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <constructor-arg name="connectionFactory" ref="connectionFactory" />
+        <property name="defaultDestination" ref="defaultDestinationName" />
+        <property name="receiveTimeout" value="${jms.topic.receiveTimeout}" />
+        <property name="pubSubDomain" value="true" />
+    </bean>
+    <bean id="defaultDestinationName" class="org.apache.activemq.command.ActiveMQTopic">  
+        <constructor-arg index="0" value="${jms.producer.topic.name}" />  
+    </bean> 
+    
+<!--     Topic消息接收者(JMS Message listener)  -->       
+    <!-- <bean id="topicMessageListener" class="com.bocom.activemq.TopicMessageListener" />
+    <bean id="jmsTopicContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+         <property name="messageListener" ref="topicMessageListener" />
+         <property name="connectionFactory" ref="connectionFactory"/>
+         <property name="destinationName" value="${jms.listener.topic.name}"/>
+         <property name="concurrentConsumers" value="${jms.listener.topic.jmsQueueContainer}"/>
+         <property name="pubSubDomain" value="true" />  
+    </bean>  -->
+    
+</beans>

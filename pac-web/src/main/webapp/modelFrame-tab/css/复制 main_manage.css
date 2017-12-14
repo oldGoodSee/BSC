@@ -1,0 +1,255 @@
+/*---- layout ----*/
+html,body{
+	height: 100%;
+}
+.header{
+	position: absolute;
+	left:0;
+	top:0;
+	right:0;
+	height:80px;
+	background: #069;
+}
+.logo{
+	position: absolute;
+	left:0;
+	top:0;
+	width:280px;
+	height: 80px;
+	line-height: 80px;
+	padding-left: 80px;
+	color: #fff;
+	font-size: 30px;
+	font-weight: normal;
+	font-family: "微软雅黑","黑体";
+	background: url(../img/logo.png) 20px center no-repeat;
+}
+.user-info{
+	float: right;
+	height: 80px;
+}
+.user-avatar{
+	float:right;
+	margin: 8px 12px;
+	width:64px;
+	height: 64px;
+	background: url(../img/avatar-default.png) center center no-repeat #ABD1F8;
+	-moz-border-radius: 8px;      /* Gecko browsers */
+    -webkit-border-radius: 8px;	/* Webkit browsers */
+	border-radius: 8px;	/* W3C syntax */
+}
+.user-txt{
+	float: right;
+	margin-top: 15px;
+	line-height: 24px;
+}
+.quit{
+	float: right;
+	margin: 24px 20px 0 16px;
+	width: 22px;
+	height: 25px;
+	background-image: url(../img/quit.png);
+	background-repeat: no-repeat;
+}
+.quit:link,
+.quit:visited{
+	background-position: 0 0;
+}
+.quit:hover,
+.quit:active{
+	background-position: 0 -25px;
+}
+
+.btn-hidden-title,
+.btn-show-title{
+	display: block;
+	position: absolute;
+	left: 50%;
+	bottom:0;
+	margin-left: -20px;
+	width: 40px;
+	height: 10px;
+	background-image:url(../img/arrowT.png);
+	background-repeat: no-repeat;
+}
+.btn-hidden-title:link,
+.btn-hidden-title:visited{
+	background-position: 0 0;
+}
+.btn-hidden-title:hover,
+.btn-hidden-title:active{
+	background-position: 0 -10px;
+}
+.btn-show-title:link,
+.btn-show-title:visited{
+	background-position: -40px 0;
+}
+.btn-show-title:hover,
+.btn-show-title:active{
+	background-position: -40px -10px;
+}
+
+.sidebar{
+	position: absolute;
+	left: 0;
+	top: 80px;
+	bottom: 0;
+	width: 260px;
+	border-right: 1px solid #ddd;
+}
+.sidebar>.toolbar{
+	margin:10px;
+	padding-bottom:10px;
+	border-bottom: 1px solid #eee;
+}
+.sidebar h1{
+	margin: 10px 0 0 0;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	font-family: "微软雅黑";
+	font-size: 20px;
+	background-color: #069;
+	text-indent: 20px;
+}
+.sidebar>ul{
+	margin:0;
+	padding: 0;
+}
+.sidebar>ul>li{
+	list-style: none;
+	height: 40px;
+	line-height: 40px;
+	text-indent: 20px;
+}
+.sidebar>ul>li>a{
+	display: block;
+	width: 100%;
+	height: 100%;
+	text-decoration: none;
+	border-bottom: 1px solid #fff;
+}
+.sidebar>ul>li>a:link,
+.sidebar>ul>li>a:visited{
+	color: #444;
+	background-color: #D9EDF7;
+}
+.sidebar>ul>li>a:hover,
+.sidebar>ul>li>a:active{
+	color: #fff;
+	background-color: #428BCA;
+}
+
+.tab-title{
+	position: absolute;
+	z-index: 100;
+	left:270px;
+	top:90px;
+	right:10px;
+	height: 42px;
+	overflow:hidden;
+	background-color: #fff;
+}
+.tab-title>.nav-tabs{
+	height: 42px;
+	width: 10000px;
+}
+.my-tab-content{
+	position: absolute;
+	left:270px;
+	top:132px;
+	right:10px;
+	bottom:10px;
+	overflow: hidden;
+}
+.my-tab-content .tab-pane{
+	margin:0;
+	padding:0;
+	width:100%;
+	height:100%;
+}
+.container-tip{
+	margin: 20px;
+	text-align: center;
+	font-family: "微软雅黑";
+	font-size: 20px;
+	color:#999;
+}
+.appInner{
+	margin-top: 100px;
+	text-align: center;
+	font-family: "微软雅黑";
+	font-size: 24px;
+}
+.appInner span{
+	display: inline-block;
+	margin-right: 20px;
+	font-size: 32px;
+	color: #5CB85C;
+}
+.info-h1{
+	margin:0 20px;
+	height: 60px;
+	line-height: 60px;
+	font-family:"微软雅黑";
+	font-size: 30px;
+	border-bottom: 1px solid #eee;;
+}
+
+/*---- template ----*/
+.template-img{
+	margin: 20px 0;
+	height:100px;
+	text-align: center;
+}
+.template-img a{
+	display: inline-block;
+	width: 140px;
+	height: 120px;
+}
+.template-img a:link,
+.template-img a:visited{
+	background-color: #fff;
+}
+.template-img a:hover,
+.template-img a:active{
+	background-color: #F7ECB5;
+}
+.template-img>a>img{
+	margin-top: 10px;
+}
+.float-l{
+	float:left;
+}
+.float-r{
+	float:right;
+}
+.clear-float{
+	clear:both;
+}
+/*---- txt ----*/
+.txt-white{color:#FFFFFF;}
+
+/*---- link ----*/
+.no-decoration{text-decoration: none;}
+.link-white:link,
+.link-white:visited{
+	color: #FFFFFF !important;
+}
+.link-white:hover,
+.link-white:active{
+	color: #FF9900 !important;
+}
+
+/*---- drag ----*/
+.drag-container{
+	display: none;
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	background:url(../img/drag-bg.png);
+	border: 2px dashed #666;
+}
+.drag-accept{
+	background-color: #BCE8F1;
+}

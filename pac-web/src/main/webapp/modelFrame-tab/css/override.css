@@ -1,0 +1,43 @@
+.layui-tab{
+	margin-top:0;
+	margin-bottom:0;
+}
+.layui-tab-brief>.layui-tab-title .layui-this{
+	color:#f90;
+	font-weight: bold;
+	background-color: rgba(255,255,255,0.3);
+}
+.layui-tab-brief>.layui-tab-more li.layui-this:after, .layui-tab-brief>.layui-tab-title .layui-this:after{
+	border-bottom: 2px solid #f90;
+}
+.layui-tab-title li a{
+	display: inline-block;
+	margin-left:10px;
+}
+.layui-tab-title li{
+	padding:0 5px 0 15px;
+}
+.layui-tab-title>.extra-btn{
+	width:40px;
+	min-width: 0;
+	padding:0;
+}
+.layui-tab-title li a:link,
+.layui-tab-title li a:visited{
+	color:#fff;
+}
+.layui-tab-title li a:hover,
+.layui-tab-title li a:active{
+	color:#f90;
+}
+.main-tool>.layui-btn-small,
+.app-search-bar>.layui-btn-small{
+	height:28px;
+	line-height: 27px;
+  padding: 0 6px 0 7px;
+  font-size: 12px;
+  border-radius: 4px;
+}
+.app-list>.layui-table td, .layui-table th{
+	padding:9px !important;
+}

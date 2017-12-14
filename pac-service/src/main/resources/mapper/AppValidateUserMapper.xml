@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppValidateUserDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppValidateUser">
+        <result column="app_id" property="appId" jdbcType="VARCHAR"/>
+        <result column="power_desc" property="powerDesc" jdbcType="VARCHAR"/>
+        <result column="flag" property="flag" jdbcType="INTEGER"/>
+    </resultMap>
+    <select id="getPowerDesc" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select app_id,power_desc,flag
+        from app_validate_user
+        where flag != 1 AND app_id=#{appId} limit 1
+    </select>
+</mapper>

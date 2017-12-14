@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.NoticeDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.NoticeInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="notice_type" property="noticeType" jdbcType="VARCHAR"/>
+        <result column="sort_id" property="sort" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime"/>
+        <result column="last_modify_time" property="lastModifyTime"/>
+        <result column="create_user_id" property="createUserId" jdbcType="VARCHAR"/>
+        <result column="frequency" property="frequency" jdbcType="INTEGER"/>
+        <result column="delete_flag" property="deleteFlag" jdbcType="INTEGER"/>
+        <result column="app_id" property="appId" jdbcType="INTEGER"/>
+        <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,content,notice_type,sort_id,create_time,last_modify_time,create_user_id,frequency,delete_flag,app_id,app_name
+    </sql>
+
+    <sql id="whereCondition">
+        <where>
+            <if test="id != null">
+                AND id=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="noticeType != null">
+                AND notice_type=#{noticeType,jdbcType=VARCHAR}
+            </if>
+            <if test="content != null">
+                AND content LIKE CONCAT('%','${content}','%')
+            </if>
+            <if test="createUserId != null">
+                AND create_user_id=#{createUserId,jdbcType=VARCHAR}
+            </if>
+            <if test="deleteFlag != null">
+                AND delete_flag=#{deleteFlag,jdbcType=INTEGER}
+            </if>
+            <if test="appId != null">
+                OR app_id=#{appId,jdbcType=INTEGER}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getNoticeInfos" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from app_notice
+        <include refid="whereCondition"/>
+        ORDER BY sort_id
+    </select>
+
+    <select id="getNoticeInfoById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from app_notice
+        WHERE id=#{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getRepeatSequence" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT count(id) FROM app_notice WHERE sort_id =#{sort,jdbcType=INTEGER} AND delete_flag = 0
+        AND create_user_id=#{createUserId,jdbcType=VARCHAR}
+        <if test="appId != null">
+            AND app_id=#{appId,jdbcType=INTEGER}
+        </if>
+        <if test="noticeType != null">
+            AND notice_type=#{noticeType,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <insert id="addNotice" useGeneratedKeys="true" keyProperty="id" parameterType="com.bocom.domain.pac.NoticeInfo">
+        insert into app_notice
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="content != null">
+                content,
+            </if>
+            <if test="noticeType != null">
+                notice_type,
+            </if>
+            <if test="sort != null">
+                sort_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="lastModifyTime != null">
+                last_modify_time,
+            </if>
+            <if test="createUserId != null">
+                create_user_id,
+            </if>
+            <if test="frequency != null">
+                frequency,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+            <if test="appId != null">
+                app_id,
+            </if>
+            <if test="appName != null">
+                app_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="noticeType != null">
+                #{noticeType,jdbcType=VARCHAR},
+            </if>
+            <if test="sort != null">
+                #{sort,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="lastModifyTime != null">
+                #{lastModifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="frequency != null">
+                #{frequency,jdbcType=INTEGER},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag,jdbcType=INTEGER},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateNotice" parameterType="java.util.Map">
+        update app_notice SET content = #{content,jdbcType=VARCHAR},last_modify_time =
+        #{lastModifyTime,jdbcType=TIMESTAMP}
+        WHERE id =#{id,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteNotice">
+        DELETE FROM app_notice WHERE id=#{id,jdbcType=INTEGER}
+    </delete>
+</mapper>

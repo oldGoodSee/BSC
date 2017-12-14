@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bocom.dao.ScreenHisMapper">
+  <resultMap id="BaseResultMap" type="com.bocom.domain.pac.ScreenHis">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+    <result column="wcode" jdbcType="VARCHAR" property="wcode" />
+    <result column="sort" jdbcType="VARCHAR" property="sort" />
+    <result column="dealTime" jdbcType="TIMESTAMP" property="dealtime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.bocom.domain.pac.ScreenHis">
+    <result column="content" jdbcType="LONGVARCHAR" property="content" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, pid, image, wcode, sort, dealTime
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="list" parameterType="map" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from screen_his h
+    <where>
+    	<if test="wcode != null">
+    		wcode=#{wcode,jdbcType=VARCHAR}
+    	</if>
+    	<if test="name !=null">
+    		AND name=#{name,jdbcType=VARCHAR}
+    	</if>
+    	<if test="pid !=null">
+    		AND pid=#{pid,jdbcType=VARCHAR}
+    	</if>
+    	<if test="beginTime !=null">
+    		AND dealTime&gt;=#{beginTime,jdbcType=TIMESTAMP}
+    	</if>
+    	<if test="endTime !=null">
+    		AND dealTime&lt;=#{endTime,jdbcType=TIMESTAMP}
+    	</if>
+    	<if test="filters != null">
+    		AND EXISTS  (
+    			select 1 from screen_his h1 where h1.name=h.name AND (h.pid=h1.pid OR h1.pid IS NULL) AND  h1.id IN
+    			<foreach collection="filters" item="item" open="(" close=")" separator=",">
+    				#{item}
+    			</foreach>
+    		)
+    	</if>
+    </where>
+  </select>
+</mapper>

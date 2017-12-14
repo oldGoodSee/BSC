@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppWidgetDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppWidgetInfo">
+        <id column="widget_id" property="widgetId" jdbcType="INTEGER"/>
+        <result column="widget_name" property="widgetName" jdbcType="VARCHAR"/>
+        <result column="filename" property="fileName" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_type" property="createType" jdbcType="SMALLINT"/>
+        <result column="create_id" property="createId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="SMALLINT"/>
+        <result column="widget_init_id" property="widgetInitId" jdbcType="INTEGER"/>
+        <result column="ip" property="ip" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="INTEGER"/>
+        <result column="unzip_folder" property="folderName" jdbcType="VARCHAR"/>
+        <result column="wrm_id" property="wrmId" jdbcType="INTEGER"/>
+    </resultMap>
+    <!-- widget appbaseinfo  -->
+    <sql id="Base_Column_List">
+      widget_id,widget_name,create_time,create_type,status,widget_init_id
+    </sql>
+    <sql id="All_Column_List">
+      widget_id,widget_name,filename,create_time,create_type,create_id,ip,status,widget_init_id,version,unzip_folder,wrm_id
+    </sql>
+    <sql id="All_InitColumn_List">
+      id,widgetName,folderName,htmlName,status,createUserID,createTime,createIp,wrmId
+    </sql>
+
+    <select id="getAppWidgetList" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from app_widget_baseinfo
+        <where>
+            <if test="widgetId != null">
+                AND widget_id=#{widgetId,jdbcType=INTEGER}
+            </if>
+            <if test="widgetName != null">
+                AND widget_name LIKE CONCAT('%','${widgetName}','%')
+            </if>
+            <if test="createId != null">
+                AND create_id = #{createId,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                AND status=#{status,jdbcType=SMALLINT}
+            </if>
+            AND filename IS NOT NULL
+        </where>
+        order by create_time DESC
+    </select>
+
+    <select id="getAppWidgetListByIdList" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from app_widget_baseinfo
+        WHERE widget_id in
+        <foreach collection="widgetIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="createId != null">
+            AND create_id = #{createId,jdbcType=VARCHAR}
+        </if>
+        order by create_time DESC
+    </select>
+
+    <select id="selectCountByAppName" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select COUNT(1)
+        from app_widget_baseinfo
+        <where>
+            <if test="widgetName != null">
+                AND widget_name = #{widgetName,jdbcType=VARCHAR}
+            </if>
+            <if test="userId != null">
+                AND create_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            AND status != '5'
+            AND filename IS NOT NULL
+        </where>
+    </select>
+
+    <select id="getAppWidgetById" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="All_Column_List"/>,#{fastDFSUrl,jdbcType=VARCHAR} as path
+        from app_widget_baseinfo
+        where widget_id = #{widgetId,jdbcType=INTEGER}
+    </select>
+
+    <update id="updateStatus" parameterType="java.util.Map">
+        UPDATE app_widget_baseinfo SET status = #{status,jdbcType=SMALLINT} WHERE widget_id = #{widgetId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateWidget" parameterType="java.util.Map">
+        UPDATE app_widget_baseinfo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="widgetName != null">
+                widget_name = #{widgetName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                filename= #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="path != null">
+                path = #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="createType != null">
+                create_type = #{createType,jdbcType=SMALLINT},
+            </if>
+            <if test="folderName != null">
+                unzip_folder = #{folderName,jdbcType=VARCHAR},
+            </if>
+            <if test="wrmId != null">
+                wrm_id = #{wrmId,jdbcType=VARCHAR},
+            </if>
+            <if test="update != null">
+                version = (version + 1),
+                unzip_folder = NULL ,
+            </if>
+        </trim>
+        WHERE widget_id = #{widgetId,jdbcType=INTEGER}
+    </update>
+
+    <delete id="deleteWidget" parameterType="java.lang.Integer">
+        DELETE FROM app_widget_baseinfo WHERE widget_id = #{widgetId,jdbcType=INTEGER}
+    </delete>
+
+    <insert id="addWidget" useGeneratedKeys="true" keyProperty="widgetId"
+            parameterType="com.bocom.domain.pac.AppWidgetInfo">
+        insert into app_widget_baseinfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="widgetName != null">
+                widget_name,
+            </if>
+            <if test="fileName != null">
+                filename,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createType != null">
+                create_type,
+            </if>
+            <if test="createId != null">
+                create_id,
+            </if>
+            <if test="ip != null">
+                ip,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="widgetInitId != null">
+                widget_init_id,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="wrmId != null">
+                wrm_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="widgetName != null">
+                #{widgetName,jdbcType=VARCHAR},
+            </if>
+            <if test="fileName != null">
+                #{fileName,jdbcType=VARCHAR},
+            </if>
+            <if test="path != null">
+                #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createType != null">
+                #{createType,jdbcType=SMALLINT},
+            </if>
+            <if test="createId != null">
+                #{createId,jdbcType=SMALLINT},
+            </if>
+            <if test="ip != null">
+                #{ip,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="widgetInitId != null">
+                #{widgetInitId,jdbcType=INTEGER},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test="wrmId != null">
+                #{wrmId,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- app_widget_init  -->
+
+    <select id="getWidgetInitInfo" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="All_InitColumn_List"/>,#{fastDFSUrl,jdbcType=VARCHAR} as path
+        from app_widget_baseinfo
+        where widget_id = #{widgetId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getWidgetInitList" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT wrmId,widgetName,folderName,htmlName,path,status,createTime,type FROM app_widget_init
+        <where>
+            <if test="id != null">
+                AND wrmId=#{id,jdbcType=INTEGER}
+            </if>
+            <if test="widgetName != null">
+                AND widgetName LIKE CONCAT('%','${widgetName}','%')
+            </if>
+            <if test="createUserID != null">
+                AND createUserID = #{createUserID,jdbcType=INTEGER}
+                OR type = 'private'
+            </if>
+            <if test="createIp != null">
+                AND createIp=#{createIp,jdbcType=SMALLINT}
+            </if>
+            <if test="folderName != null">
+                AND folderName=#{createIp,jdbcType=SMALLINT}
+            </if>
+            AND status != 4
+        </where>
+        order by createTime DESC
+    </select>
+
+    <update id="updateWidgetInit" parameterType="java.util.Map">
+        UPDATE app_widget_init SET
+        <if test="widgetName != null">
+            widgetName = #{widgetName,jdbcType=VARCHAR},
+        </if>
+        <if test="fileName != null">
+            filename= #{fileName,jdbcType=VARCHAR},
+        </if>
+        <if test="htmlName != null">
+            htmlName= #{htmlName,jdbcType=VARCHAR},
+        </if>
+        <if test="path != null">
+            path = #{path,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            status#{status,jdbcType=SMALLINT},
+        </if>
+        WHERE wrmId = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

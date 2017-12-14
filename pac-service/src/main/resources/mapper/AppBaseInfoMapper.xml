@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppBaseInfoDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppBaseInfo">
+        <id column="app_id" property="appId" jdbcType="INTEGER"/>
+        <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+        <result column="app_desc" property="appDesc" jdbcType="VARCHAR"/>
+        <result column="assembly_threshold" property="assemblyThreshold" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_userid" property="createUserId" jdbcType="VARCHAR"/>
+        <result column="user_ip_addr" property="userIpAddr" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="SMALLINT"/>
+        <result column="ver" property="ver" jdbcType="VARCHAR"/>
+        <result column="last_modify_time" property="lastMofityTime"/>
+        <result column="is_auto_uninstall" property="isAutoUninstall" jdbcType="SMALLINT"/>
+        <result column="uninstall_time" property="uninstallTime"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+        <result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="AddAuthorizeMap" type="com.bocom.domain.pac.AppBaseInfo">
+        <id column="app_id" property="appId" jdbcType="INTEGER"/>
+        <result column="app_name" property="appName" jdbcType="VARCHAR"/>
+        <result column="app_desc" property="appDesc" jdbcType="VARCHAR"/>
+        <result column="assembly_threshold" property="assemblyThreshold" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_userid" property="createUserId" jdbcType="VARCHAR"/>
+        <result column="user_ip_addr" property="userIpAddr" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="SMALLINT"/>
+        <result column="ver" property="ver" jdbcType="VARCHAR"/>
+        <result column="last_modify_time" property="lastMofityTime"/>
+        <result column="is_auto_uninstall" property="isAutoUninstall" jdbcType="SMALLINT"/>
+        <result column="uninstall_time" property="uninstallTime"/>
+        <result column="source" property="source" jdbcType="VARCHAR"/>
+        <result column="task_id" property="taskId" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="isAuthorize" property="isAuthorize" jdbcType="VARCHAR"/>
+        <result column="userRealName" property="userRealName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    app_id,app_name,app_desc,assembly_threshold,create_time,create_userid,user_ip_addr,status,ver,last_modify_time,
+    is_auto_uninstall,uninstall_time,source,task_id,user_name
+    </sql>
+
+    <select id="getAppInfoByTaskId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM app_baseinfo WHERE task_id = #{taskId}
+    </select>
+
+    <select id="queryAppInfo" parameterType="java.util.Map" resultMap="AddAuthorizeMap">
+        select
+        <include refid="Base_Column_List"/>
+        <if test="orgId != null ">
+            ,if(app_id in (SELECT appid from app_users users where users.userid= #{userid}
+            or orgid=#{orgId}) AND create_userid != #{userid}
+            <if test="admin">
+                AND source is null
+            </if>
+            ,'true','false') as isAuthorize
+        </if>
+        <if test="orgId == null ">
+            ,if(app_id in (SELECT appid from app_users users where users.userid= #{userid})
+            AND create_userid != #{userid} ,'true','false') as isAuthorize
+        </if>
+        from app_baseinfo
+        <where>
+            <if test="userid != null">
+                AND create_userid=#{userid}
+            </if>
+            <if test="appId != null">
+                AND app_id=#{appId,jdbcType=INTEGER}
+            </if>
+            <if test="appName != null">
+                AND app_name LIKE CONCAT('%','${appName}','%')
+            </if>
+            <if test="status != null">
+                AND status=#{status,jdbcType=SMALLINT}
+            </if>
+            <if test="admin">
+                OR ( source IS NOT NULL
+                <if test="appName != null">
+                    AND app_name LIKE CONCAT('%','${appName}','%')
+                </if>
+                <if test="status != null">
+                    AND status=#{status,jdbcType=SMALLINT}
+                </if>
+                )
+            </if>
+            <if test="!admin">
+                AND ( source IS NULL
+                <if test="appName != null">
+                    AND app_name LIKE CONCAT('%','${appName}','%')
+                </if>
+                <if test="status != null">
+                    AND status=#{status,jdbcType=SMALLINT}
+                </if>)
+            </if>
+            <if test="orgId != null ">
+                OR (app_id in (SELECT appid from app_users users where users.userid= #{userid}
+                or orgid=#{orgId})
+                AND status !=0
+                <if test="status != null">
+                    AND status=#{status,jdbcType=SMALLINT}
+                </if>
+                <if test="appName != null">
+                    AND app_name LIKE CONCAT('%','${appName}','%')
+                </if>
+                )
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getAppBaseInfoById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_baseinfo
+        where app_id=#{appId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getAppBaseInfoList" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from app_baseinfo
+        <where>
+            <if test="appId != null">
+                AND app_id=#{appId,jdbcType=INTEGER}
+            </if>
+            <if test="appName != null">
+                AND app_name LIKE CONCAT('%','${appName}','%')
+            </if>
+            <if test="appDesc != null">
+                AND app_desc LIKE CONCAT('%','${appDesc}','%')
+            </if>
+            <if test="status != null">
+                AND status=#{status,jdbcType=SMALLINT}
+            </if>
+            <if test="userid != null">
+                AND create_userid=#{userid,jdbcType=VARCHAR}
+            </if>
+            <if test="appIdList != null">
+                <foreach collection="appIdList" item="item" index="index" open="and app_id in (" separator=","
+                         close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by create_time DESC
+    </select>
+
+    <select id="getAppNameIdList" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select app_name,app_id
+        from app_baseinfo
+        <where>
+            <if test="appId != null">
+                AND app_id=#{appId,jdbcType=INTEGER}
+            </if>
+            <if test="appName != null">
+                AND app_name LIKE CONCAT('%','${appName}','%')
+            </if>
+            <if test="status != null">
+                AND status=#{status,jdbcType=SMALLINT}
+            </if>
+            <if test="statusList != null">
+                <foreach collection="statusList" item="item" index="index" open="and status in (" separator=","
+                         close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userId != null">
+                AND create_userid=#{userId,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by create_time DESC
+    </select>
+
+    <select id="selectAppInfoByAppName" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM app_baseinfo
+        <where>
+            <if test="appName != null">
+                AND app_name=#{appName,jdbcType=VARCHAR}
+            </if>
+            <if test="userId != null">
+                AND create_userid=#{userId,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <update id="updateAppBaseInfo" parameterType="com.bocom.domain.pac.AppBaseInfo">
+        UPDATE app_baseinfo
+        <set>
+            <if test="appDesc != null">
+                app_desc=#{appDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="lastMofityTime != null">
+                last_modify_time=#{lastMofityTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="uninstallTime != null">
+                uninstall_time=#{uninstallTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isAutoUninstall != null">
+                is_auto_uninstall=#{isAutoUninstall,jdbcType=INTEGER},uninstall_time=#{uninstallTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE app_id = #{appId,jdbcType=INTEGER}
+    </update>
+    <update id="updateStatus" parameterType="java.util.Map">
+      UPDATE app_baseinfo SET status = #{status,jdbcType=SMALLINT} WHERE app_id = #{appId,jdbcType=INTEGER}
+    </update>
+    <update id="updateAppSnaTime" parameterType="java.util.Map">
+      UPDATE app_baseinfo_snapshot SET uninstall_time = #{uninstallTime,jdbcType=DATE} WHERE app_id = #{appId,jdbcType=INTEGER}
+    </update>
+    <insert id="insertAppSnapshot" parameterType="java.util.Map">
+        INSERT INTO app_baseinfo_snapshot SELECT * FROM app_baseinfo WHERE app_id = #{appId,jdbcType=INTEGER}
+    </insert>
+    <delete id="deleteApp" parameterType="java.util.Map">
+        DELETE FROM app_baseinfo WHERE app_id = #{appId,jdbcType=INTEGER}
+    </delete>
+    <insert id="addAppInfo" useGeneratedKeys="true" keyProperty="appId"
+            parameterType="com.bocom.domain.pac.AppBaseInfo">
+        insert into app_baseinfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="appName != null">
+                app_name,
+            </if>
+            <if test="appDesc != null">
+                app_desc,
+            </if>
+            <if test="assemblyThreshold != null">
+                assembly_threshold,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="createUserId != null">
+                create_userid,
+            </if>
+            <if test="userIpAddr != null">
+                user_ip_addr,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="ver != null">
+                ver,
+            </if>
+            <if test="lastMofityTime != null">
+                last_modify_time,
+            </if>
+            <if test="isAutoUninstall != null">
+                is_auto_uninstall,
+            </if>
+            <if test="uninstallTime != null">
+                uninstall_time,
+            </if>
+            <if test="include_app != null">
+                include_app,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="appName != null">
+                #{appName,jdbcType=VARCHAR},
+            </if>
+            <if test="appDesc != null">
+                #{appDesc,jdbcType=VARCHAR},
+            </if>
+            <if test="assemblyThreshold != null">
+                #{assemblyThreshold,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createUserId != null">
+                #{createUserId,jdbcType=VARCHAR},
+            </if>
+            <if test="userIpAddr != null">
+                #{userIpAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=SMALLINT},
+            </if>
+            <if test="ver != null">
+                #{ver,jdbcType=VARCHAR},
+            </if>
+            <if test="lastMofityTime != null">
+                #{lastMofityTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isAutoUninstall != null">
+                #{isAutoUninstall,jdbcType=SMALLINT},
+            </if>
+            <if test="uninstallTime != null">
+                #{uninstallTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="include_app != null">
+                #{include_app,jdbcType=VARCHAR},
+            </if>
+            <if test="source != null">
+                #{source,jdbcType=VARCHAR},
+            </if>
+            <if test="taskId != null">
+                #{taskId,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <select id="getAppHistory" resultType="java.util.Map" parameterType="java.util.Map">
+        select app_id as appId ,app_name as appName from app_baseinfo_snapshot
+        <if test="appId != null">
+            where
+            create_userid = #{userId,jdbcType=VARCHAR} and
+            app_id in
+            <foreach collection="appId" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="getInfoByUninstallTime" resultType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM app_baseinfo
+        <where>
+            is_auto_uninstall = 1
+            <if test="time != null">
+                AND uninstall_time <![CDATA[   <=  ]]> #{time}
+            </if>
+        </where>
+    </select>
+
+</mapper>

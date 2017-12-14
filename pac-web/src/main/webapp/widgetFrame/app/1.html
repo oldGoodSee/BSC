@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+	<link rel="stylesheet" href="../css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../css/edit.css" id="editCss" />
+	
+	<script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/layer/layer.js"></script>
+	<script type="text/javascript" src="../js/laypage/laypage.js"></script>
+	<script type="text/javascript" src="../js/tool.js"></script>
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="../js/html5shiv.min.js"></script>
+      	<script src="../js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+  	<div class="full-container">
+	    <div class="row">
+	    	<div class="col-xs-8">
+	    		<input type="text" class="form-control" size="20" placeholder="请输入关键字" />
+	    	</div>
+	    	<div class="col-xs-4">
+	    		<button class="btn btn-default">搜索</button>
+	    	</div>
+	    </div>
+	    <div class="row" style="margin-top: 20px;">
+	    	<div class="col-xs-12">
+		    	<table class="table ajax-data">
+		    		<tr>
+		    			<th>列1</th>
+		    			<th>列2</th>
+		    			<th>列3</th>
+		    		</tr>
+		    	</table>
+		    </div>
+		    <div class="col-xs-12" style="text-align:right" id="page"></div>
+		</div>
+	</div>
+  </body>
+  <script type="text/javascript" id="configJs"></script>
+  <script type="text/javascript" id="mainJs">
+  	$(document).on("ready",function(){
+  		$("button").eq(0).on("click",function(){
+  			var paramObj = {};
+  			if($("#keyword").val()){
+  				paramObj.name = $("#keyword").val();
+  			}
+  			fillData(config.url,paramObj,$("#dataTable"),$("#page"),1);
+  		});
+  	});
+  </script>
+  <script type="text/javascript" src="../js/edit.js" id="editJs"></script>
+</html>

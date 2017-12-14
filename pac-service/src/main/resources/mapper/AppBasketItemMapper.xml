@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppBasketItemDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppBasketItemInfo">
+        <id column="uuid" property="uuid" jdbcType="INTEGER"/>
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="pageid" property="pageId" jdbcType="VARCHAR"/>
+        <result column="pagename" property="pageName" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="oappid" property="oappId" jdbcType="VARCHAR"/>
+        <result column="oappname" property="oappName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+      uuid, id, pageid, pagename, url, oappid, oappname
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_basket_item
+        where uuid = #{uuid,jdbcType=INTEGER}
+    </select>
+    <select id="queryBasketInfo" resultMap="BaseResultMap" parameterType="com.bocom.domain.pac.PackagingInfo">
+        select uuid, item.id, pageid, pagename, url, oappid, oappname
+        from app_basket_item item, app_basket_baseinfo info
+        <where>
+            <if test="pageid != null">
+                AND pageid = #{pageid,jdbcType=VARCHAR}
+            </if>
+            <if test="pageids != null">
+                AND pageid in
+                <foreach collection="pageids" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userid != null">
+                AND info.id = item.id AND info.userid = #{userid,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from app_basket_item
+    where uuid = #{uuid,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.bocom.domain.pac.AppBasketItemInfo">
+    insert into app_basket_item (uuid, id, pageid, 
+      pagename, url, oappid,
+      oappname)
+    values (#{uuid,jdbcType=INTEGER}, #{id,jdbcType=VARCHAR}, #{pageId,jdbcType=VARCHAR},
+      #{pageName,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR}, #{oappId,jdbcType=VARCHAR},
+      #{oappName,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.bocom.domain.pac.AppBasketItemInfo">
+        insert into app_basket_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="uuid != null">
+                uuid,
+            </if>
+            <if test="id != null">
+                id,
+            </if>
+            <if test="pageId != null">
+                pageid,
+            </if>
+            <if test="pageName != null">
+                pagename,
+            </if>
+            <if test="url != null">
+                url,
+            </if>
+            <if test="oappId != null">
+                oappid,
+            </if>
+            <if test="oappName != null">
+                oappname,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="uuid != null">
+                #{uuid,jdbcType=INTEGER},
+            </if>
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="pageId != null">
+                #{pageId,jdbcType=VARCHAR},
+            </if>
+            <if test="pageName != null">
+                #{pageName,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="oappId != null">
+                #{oappId,jdbcType=VARCHAR},
+            </if>
+            <if test="oappName != null">
+                #{oappName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bocom.domain.pac.AppBasketItemInfo">
+        update app_basket_item
+        <set>
+            <if test="id != null">
+                id = #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="pageId != null">
+                pageid = #{pageId,jdbcType=VARCHAR},
+            </if>
+            <if test="pageName != null">
+                pagename = #{pageName,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                url = #{url,jdbcType=VARCHAR},
+            </if>
+            <if test="oappId != null">
+                oappid = #{oappId,jdbcType=VARCHAR},
+            </if>
+            <if test="oappName != null">
+                oappname = #{oappName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where uuid = #{uuid,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bocom.domain.pac.AppBasketItemInfo">
+    update app_basket_item
+    set id = #{id,jdbcType=VARCHAR},
+      pageid = #{pageId,jdbcType=VARCHAR},
+      pagename = #{pageName,jdbcType=VARCHAR},
+      url = #{url,jdbcType=VARCHAR},
+      oappid = #{oappId,jdbcType=VARCHAR},
+      oappname = #{oappName,jdbcType=VARCHAR}
+    where uuid = #{uuid,jdbcType=INTEGER}
+  </update>
+</mapper>

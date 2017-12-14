@@ -1,0 +1,9 @@
+[{
+	"name":"人口信息查询",
+	"id":"peopleSearch",
+	"url":"app/1.html"
+},{
+	"name":"test",
+	"id":"test",
+	"url":"app/2/2.html"
+}]

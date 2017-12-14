@@ -1,0 +1,79 @@
+[
+	{
+		"pageName": "222",
+		"id": 1,
+		"panel": [
+			{
+				"width": "100%",
+				"height": "100%",
+				"pageName": "应用2",
+				"url": "002.html"
+			}
+		],
+		"win": []
+	}, {
+		"pageName": "1111",
+		"id": 0,
+		"panel": [
+			{
+				"width": "70%",
+				"height": "100%",
+				"panel": [
+					{
+						"width": "100%",
+						"height": "50%",
+						"pageName": "应用1",
+						"url": "001.html"
+					}, {
+						"width": "100%",
+						"height": "50%",
+						"pageName": "应用3",
+						"url": "003.html"
+					}
+				]
+			}, {
+				"width": "30%",
+				"height": "100%",
+				"pageName": "应用2",
+				"url": "002.html"
+			}
+		],
+		"win": [
+			{
+				"winTitle": "1231",
+				"id": 1482660127814,
+				"area": [
+					"736px",
+					"484px"
+				],
+				"offset": [
+					"25.326560232220608%",
+					"22.34375%"
+				],
+				"url": "001.html"
+			}
+		]
+	}, {
+		"pageName": "22333",
+		"id": 2,
+		"panel": [
+			{
+				"width": "30%",
+				"height": "100%",
+				"pageName": "应用1",
+				"url": "001.html"
+			}, {
+				"width": "40%",
+				"height": "100%",
+				"pageName": "应用2",
+				"url": "002.html"
+			}, {
+				"width": "30%",
+				"height": "100%",
+				"pageName": "应用3",
+				"url": "003.html"
+			}
+		],
+		"win": []
+	}
+]

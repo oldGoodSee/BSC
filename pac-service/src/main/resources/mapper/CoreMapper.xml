@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.CoreDAO">
+
+
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.PackagingInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="pageid" property="pageid" jdbcType="VARCHAR"/>
+        <result column="pagename" property="pageName" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="oappname" property="oappname" jdbcType="VARCHAR"/>
+        <result column="oappid" property="oappid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+    <!-- query: is the basket exist??? -->
+    <select id="isBasketExist" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="java.lang.String">
+        select id from app_basket_baseinfo where userid=#{userid}
+    </select>
+    <!--query  Basket info by appId-->
+    <select id="getBasketByAppId" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select item.id,item.pageid,item.pagename as pageName,item.url,item.oappname,item.oappid
+        <if test="userid != null">
+            from app_basket_item item where item.id in(select id from
+            app_basket_baseinfo where userid= #{userid} )
+        </if>
+    </select>
+
+    <select id="getCountForBasketByUserId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1) from app_basket_item item where item.id in(select id from
+        app_basket_baseinfo where userid= #{userId} )
+    </select>
+
+    <!--add the page to our basket -->
+    <insert id="addToBasket" parameterType="com.bocom.domain.pac.PackagingInfo">
+      INSERT INTO app_basket_item (id,pageid,pageName,url,oappid,oappname) VALUES
+      (#{id},#{pageid},#{pagename},#{url},#{oappid},#{oappname})
+    </insert>
+
+    <!-- before add basket-->
+    <select id="beforeAddBasket" resultType="java.lang.Integer" parameterType="java.util.Map">
+      select count(*) from app_basket_item where id=#{id} and pageid=#{pageid}
+    </select>
+
+    <insert id="addToBasketNew" parameterType="java.util.Map">
+        INSERT INTO app_basket_item (id,pageid,pageName,url,oappid,oappname) VALUES
+        (#{id},#{pageid},#{pagename},#{pageurl},#{appid},#{appname})
+    </insert>
+    <!-- create a new basket for current app -->
+    <insert id="addNewBasket" parameterType="com.bocom.domain.pac.PackagingInfo">
+        <selectKey order="AFTER" keyProperty="id" resultType="java.lang.Integer">
+            SELECT @@IDENTITY
+        </selectKey>
+        INSERT INTO app_basket_baseinfo (appid,createtime,userid) VALUES ('',#{createtime},#{userid})
+    </insert>
+
+    <!-- query: get all the pages from the basket -->
+    <select id="getPageListByBasket" resultType="com.bocom.domain.pac.PackagingInfo"
+            parameterType="com.bocom.domain.pac.PackagingInfo">
+    select t.id, t.pageid from app_basket_item t
+    where t.id=#{id}
+  </select>
+
+    <!--remove pages from our basket -->
+    <delete id="deleteFromBasket" parameterType="com.bocom.domain.pac.PackagingInfo">
+        delete from app_basket_item where id=(select id from app_basket_baseinfo where userid=#{userid} limit 0,1)
+        <if test="pageid != null">
+            and pageid=#{pageid}
+        </if>
+        <if test="pageids != null">
+            and pageid in
+            <foreach collection="pageids" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+
+    <delete id="deleteFromAppConfig" parameterType="com.bocom.domain.pac.PackagingInfo">
+        delete from app_config_info where appid=#{appid}
+        <if test="pageid != null">
+            and pageid=#{pageid}
+        </if>
+        <if test="pageids != null">
+            and pageid in
+            <foreach collection="pageids" item="item" index="index" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+
+    <select id="getCashInfo" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="com.bocom.domain.pac.PackagingInfo">
+    SELECT pageid FROM app_config_info WHERE appid=#{appid}
+  </select>
+
+    <insert id="addCashInfo" parameterType="com.bocom.domain.pac.PackagingInfo">
+    INSERT INTO app_config_info (appid,sortid,pageid,status,url,o_appid,o_appname,pagename)
+    VALUES
+    (#{appid},0,#{pageid},#{status},#{url},#{oappid},#{oappname},#{pagename})
+  </insert>
+
+    <update id="savePageSort" parameterType="com.bocom.domain.pac.PackagingInfo">
+    UPDATE app_config_info SET sortid=#{sort},showtype=#{showtype},resolution=#{resolution},
+    position=#{position}, fatherid=#{fatherid}
+    WHERE appid=#{appid} and pageid=#{pageid}
+  </update>
+
+    <select id="getUserList" resultType="com.bocom.domain.UserRoleOrg"
+            parameterType="com.bocom.domain.UserRoleOrg">
+        select u.id AS userId,u.loginname AS realName, org.orgname AS orgName,u.orgid AS orgID
+        from temp_org org,temp_sys_user u
+        where u.orgid=org.id
+        <if test="orgID != null">
+            and u.orgid=#{orgID}
+        </if>
+        order by u.id
+    </select>
+
+    <select id="getOrgList" resultType="com.bocom.domain.UserRoleOrg">
+    select id AS orgID, orgName as orgName
+    from temp_org
+    order by id
+  </select>
+
+    <delete id="deleteAppUser" parameterType="com.bocom.domain.UserRoleOrg">
+      DELETE FROM app_users where appid=#{appId} and (orgid = '' or orgid is null)
+    </delete>
+
+    <!-- new -->
+    <delete id="deleteAppOrg" parameterType="com.bocom.domain.UserRoleOrg">
+        DELETE FROM app_users where appid=#{appId} and orgid=#{orgId}
+    </delete>
+
+
+    <insert id="addAppUser" parameterType="com.bocom.domain.UserRoleOrg">
+      INSERT INTO app_users (appid,orgid,userid,username,screenname)
+      VALUES (#{appId},'',#{userId},#{userName},#{screenName})
+    </insert>
+    <!-- new-->
+    <insert id="addAppOrg" parameterType="com.bocom.domain.UserRoleOrg">
+        INSERT INTO app_users (appid,orgid,userid,username,screenname)
+         VALUES (#{appId},#{orgId},'','','')
+    </insert>
+    <!-- new-->
+    <select id="validateOrg" parameterType="com.bocom.domain.UserRoleOrg"
+            resultType="java.lang.Integer">
+      select count(*) from app_users where appid=#{appId} and orgid=#{orgId}
+    </select>
+    <!-- new-->
+    <delete id="delAppOrg" parameterType="com.bocom.domain.UserRoleOrg">
+      delete from app_users
+      where appid=#{appId}
+      and orgid=#{orgId}
+    </delete>
+
+    <update id="updateConfigByApp" parameterType="com.bocom.domain.pac.PackagingInfo">
+      UPDATE app_config_info SET status=1 where appid=#{appid}
+    </update>
+
+    <select id="getConfigByApp" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="com.bocom.domain.pac.PackagingInfo">
+        SELECT b.app_name AS appname,c.pagename as pagename,c.sortid AS sort,c.url AS url,c.showtype,
+        c.resolution AS resolution, c.pageid as pageid,
+        c.position AS position, c.fatherid AS fatherid
+        FROM app_baseinfo b,app_config_info c
+        WHERE c.appid=#{appid} and c.showtype != 'win'
+        AND c.appid=b.app_id
+        ORDER BY c.sortid, c.id
+    </select>
+
+    <select id="getWinList" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="com.bocom.domain.pac.PackagingInfo">
+        SELECT pagename as pagename, url AS url, resolution AS resolution,
+        sortid as sort
+        from app_config_info
+        where
+        fatherid in
+        <foreach collection="pageids" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and appid=#{appid}
+    </select>
+
+    <select id="getRoleIdByApp" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="java.lang.String">
+      SELECT roleid FROM app_role where appid=#{appid} limit 0,1
+    </select>
+
+    <select id="getPacList" resultType="com.bocom.domain.pac.AppBaseInfo"
+            parameterType="com.bocom.domain.pac.PackagingInfo">
+        SELECT b.app_id AS appId, b.app_name AS appName,
+        '1' AS isrun
+        FROM app_baseinfo b, app_users u
+        WHERE u.userid=#{userid}
+        AND b.app_id=u.appid and b.status=1
+        ORDER BY app_id
+    </select>
+
+    <select id="getAppUser" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="com.bocom.domain.UserRoleOrg">
+        select u.userid as userId, u.username as userName, u.screenname as screenName
+        from app_users u
+        where
+        u.appid=#{appid} and (u.orgid='' or u.orgid is null)
+    </select>
+
+    <!--new -->
+    <select id="getAppOrg" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="com.bocom.domain.UserRoleOrg">
+        select u.orgid as orgId
+        from app_users u
+        where
+        u.appid=#{appid} and (u.userid is null or u.userid='')
+    </select>
+
+
+    <select id="getUserNameByAppId" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT u.screenname as userName
+        from app_users u
+        where u.appid=#{appid}
+    </select>
+
+    <!-- do a validate for pac-c -->
+    <!-- edit by Richard.W in 2017-7-11 -->
+    <select id="validatePacUser" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="java.lang.Integer">
+        SELECT count(*) FROM app_users
+        <where>
+            <if test="appid != null">
+                AND appid=#{appid}
+            </if>
+            <if test="orgid != null">
+                AND orgid=#{orgid}
+            </if>
+            <if test="userid != null">
+                AND screenname=#{userid}
+            </if>
+        </where>
+    </select>
+
+    <select id="getAppStatus" parameterType="com.bocom.domain.pac.PackagingInfo"
+            resultType="java.lang.Integer">
+      select status as status from app_baseinfo where app_id=#{appid}
+    </select>
+
+    <!-- validate: the appid in the database???-->
+    <select id="validateHotAppEx" parameterType="java.util.Map"
+            resultType="java.lang.Integer">
+        select count(*) from app_hotapp h
+        where h.mappid=#{appId}
+        and h.apptype=#{appType}
+    </select>
+
+    <!-- the appid isn't in the database, we need insert a new record into the database-->
+    <insert id="saveCompositionNum" parameterType="java.util.Map">
+      insert into app_hotapp (mappid,apptype,num)
+      values (#{appId}, #{appType}, #{num})
+    </insert>
+    <!-- the appid has been in the database, we have to only update the record -->
+    <update id="updateCompositionNum" parameterType="java.util.Map">
+      update app_hotapp
+      set num=(num+(cast(#{num} as SIGNED INTEGER)))
+      where apptype=#{appType} and mappid=#{appId}
+    </update>
+    <select id="getPageIdsByUserId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT item.pageid FROM app_basket_item item ,app_basket_baseinfo info where item.id= info.id and info.userid=#{userId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getComposeNum" resultType="java.util.Map">
+      select mappid, num from app_hotapp
+    </select>
+</mapper>

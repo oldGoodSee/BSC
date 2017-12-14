@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.2.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+    http://www.springframework.org/schema/util 
+    http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass">
+            <value>${c3p0.driverClass}</value>
+        </property>
+        <property name="jdbcUrl">
+            <value>${c3p0.jdbcUrl}</value>
+        </property>
+        <property name="user">
+            <value>${c3p0.user}</value>
+        </property>
+        <property name="password">
+            <value>${c3p0.password}</value>
+        </property>
+        <property name="minPoolSize">
+            <value>${c3p0.minPoolSize}</value>
+        </property>
+        <property name="maxPoolSize">
+            <value>${c3p0.maxPoolSize}</value>
+        </property>
+        <property name="initialPoolSize">
+            <value>${c3p0.initialPoolSize}</value>
+        </property>
+        <property name="maxIdleTime">
+            <value>${c3p0.maxIdleTime}</value>
+        </property>
+        <property name="acquireIncrement">
+            <value>${c3p0.acquireIncrement}</value>
+        </property>
+        <property name="acquireRetryAttempts">
+            <value>${c3p0.acquireRetryAttempts}</value>
+        </property>
+        <property name="acquireRetryDelay">
+            <value>${c3p0.acquireRetryDelay}</value>
+        </property>
+        <property name="testConnectionOnCheckin">
+            <value>${c3p0.testConnectionOnCheckin}</value>
+        </property>
+        <property name="automaticTestTable">
+            <value>${c3p0.automaticTestTable}</value>
+        </property>
+        <property name="idleConnectionTestPeriod">
+            <value>${c3p0.idleConnectionTestPeriod}</value>
+        </property>
+        <property name="checkoutTimeout">
+            <value>${c3p0.checkoutTimeout}</value>
+        </property>
+    </bean>
+    
+    <bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass">
+            <value>${datasource.oracle.driverClass}</value>
+        </property>
+        <property name="jdbcUrl">
+            <value>${datasource.oracle.jdbcUrl}</value>
+        </property>
+        <property name="user">
+            <value>${datasource.oracle.user}</value>
+        </property>
+        <property name="password">
+            <value>${datasource.oracle.password}</value>
+        </property>
+        <property name="minPoolSize">
+            <value>${datasource.oracle.minPoolSize}</value>
+        </property>
+        <property name="maxPoolSize">
+            <value>${datasource.oracle.maxPoolSize}</value>
+        </property>
+        <property name="initialPoolSize">
+            <value>${datasource.oracle.initialPoolSize}</value>
+        </property>
+        <property name="maxIdleTime">
+            <value>${datasource.oracle.maxIdleTime}</value>
+        </property>
+        <property name="acquireIncrement">
+            <value>${datasource.oracle.acquireIncrement}</value>
+        </property>
+        <property name="acquireRetryAttempts">
+            <value>${datasource.oracle.acquireRetryAttempts}</value>
+        </property>
+        <property name="acquireRetryDelay">
+            <value>${datasource.oracle.acquireRetryDelay}</value>
+        </property>
+    </bean>
+    
+    <bean id="dynamicDataSource" class="com.bocom.ds.DynamicDataSource">
+    	<property name="targetDataSources">
+    		<map key-type="java.lang.String">
+    			<entry key="dataSource" value-ref="dataSource"/>
+    			<entry key="dataSource2" value-ref="dataSource2"/>
+    		</map>
+    	</property>
+    	<property name="defaultTargetDataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- mybatis文件配置，扫描所有mapper文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dynamicDataSource"/>
+        <property name="configLocation" value="classpath:conf/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:mapper/*.xml"/>
+    </bean>
+
+
+    <!-- spring与mybatis整合配置，扫描所有dao -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer"
+          p:basePackage="com.bocom.dao"
+          p:sqlSessionFactoryBeanName="sqlSessionFactory"/>
+
+    <!-- 对数据源进行事务管理 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+          p:dataSource-ref="dynamicDataSource"/>
+
+    <!--配置事务的传播特性 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="save*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="del*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="update*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="submit*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="auto*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+            <tx:method name="publish*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+	<bean id="dataSourceInterceptor" class="com.bocom.ds.DataSourceInterceptor"/>
+
+    <!--哪些类的哪些方法参与事务 -->
+    <aop:config>
+    	<aop:advisor pointcut="execution(* com.bocom.service..*(..)) || execution(* com.bocom.business..*(..))" advice-ref="txAdvice"/>
+        <aop:aspect ref="dataSourceInterceptor">
+        	<aop:pointcut id="ds1" expression="execution(* com.bocom.service..*(..)) || execution(* com.bocom.business..*(..))"/>
+        	<aop:pointcut id="ds2" expression="execution(* com.bocom.ds2.service..*(..))"/>
+        	<aop:before method="setDataSource1" pointcut-ref="ds1"/>
+        	<aop:before method="setDataSource2" pointcut-ref="ds2"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

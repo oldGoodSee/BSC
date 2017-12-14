@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppRelationDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppRelationInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="appId" property="appId" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="third_appId" property="thirdAppId" jdbcType="VARCHAR"/>
+        <result column="page_ids" property="pageIds" jdbcType="VARCHAR"/>
+        <result column="widget_ids" property="widgetIds" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, appId, type, third_appId, page_ids, widget_ids, create_time, user_id
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_relation_info
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectWidgetRelationByAppId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_relation_info
+        where appId = #{appId,jdbcType=INTEGER} AND type='WIDGET'
+    </select>
+    <select id="selectRelationByAppId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_relation_info
+        where appId = #{appId,jdbcType=INTEGER}
+    </select>
+    <select id="checkRelation" resultMap="BaseResultMap" parameterType="com.bocom.domain.pac.AppRelationInfo">
+        select re.id,re.user_id,re.type,re.third_appId,re.page_ids,re.widget_ids,app.app_name as appName,app.app_id as
+        appId
+        from app_relation_info re, app_baseinfo app
+        <where>
+            <if test="type != null">
+                AND type=#{type,jdbcType=VARCHAR}
+            </if>
+            <if test="thirdAppId != null">
+                AND third_appId =#{thirdAppId,jdbcType=VARCHAR}
+            </if>
+            <if test="pageId != null">
+                AND page_ids LIKE CONCAT('%','id=${pageId},','%')
+            </if>
+            <if test="widgetId != null">
+                AND widget_ids LIKE CONCAT('%','id=${widgetId},','%')
+            </if>
+            AND re.appId = app.app_id
+        </where>
+        ORDER BY re.create_time DESC
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from app_relation_info
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteByAppId" parameterType="java.lang.Integer">
+        delete from app_relation_info
+        where appId = #{appId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectCountByAppId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        select COUNT(1)
+        from app_relation_info
+        where appId = #{appId,jdbcType=INTEGER}
+    </select>
+
+    <insert id="insert" parameterType="com.bocom.domain.pac.AppRelationInfo">
+        insert into app_relation_info (id, appId, type,
+        third_appId, page_ids, widget_ids,
+        create_time, user_id)
+        values (#{id,jdbcType=INTEGER}, #{appId,jdbcType=INTEGER}, #{type,jdbcType=VARCHAR},
+        #{thirdAppId,jdbcType=VARCHAR}, #{pageIds,jdbcType=VARCHAR}, #{widgetIds,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{userId,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.bocom.domain.pac.AppRelationInfo">
+        insert into app_relation_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="appId != null">
+                appId,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="thirdAppId != null">
+                third_appId,
+            </if>
+            <if test="pageIds != null">
+                page_ids,
+            </if>
+            <if test="widgetIds != null">
+                widget_ids,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="appId != null">
+                #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdAppId != null">
+                #{thirdAppId,jdbcType=VARCHAR},
+            </if>
+            <if test="pageIds != null">
+                #{pageIds,jdbcType=VARCHAR},
+            </if>
+            <if test="widgetIds != null">
+                #{widgetIds,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bocom.domain.pac.AppRelationInfo">
+        update app_relation_info
+        <set>
+            <if test="appId != null">
+                appId = #{appId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="thirdAppId != null">
+                third_appId = #{thirdAppId,jdbcType=VARCHAR},
+            </if>
+            <if test="pageIds != null">
+                page_ids = #{pageIds,jdbcType=VARCHAR},
+            </if>
+            <if test="widgetIds != null">
+                widget_ids = #{widgetIds,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bocom.domain.pac.AppRelationInfo">
+    update app_relation_info
+    set appId = #{appId,jdbcType=INTEGER},
+      type = #{type,jdbcType=VARCHAR},
+      third_appId = #{thirdAppId,jdbcType=VARCHAR},
+      page_ids = #{pageIds,jdbcType=VARCHAR},
+      widget_ids = #{widgetIds,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      user_id = #{userId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppOperationLogDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppOperationLogInfo">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="operation_type" property="operationType" jdbcType="VARCHAR"/>
+        <result column="business_type" property="businessType" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="org_id" property="orgId" jdbcType="VARCHAR"/>
+        <result column="org_name" property="orgName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="ip_addr" property="ipAddr" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        ID, operation_type,business_type, content, user_name, org_id, org_name, create_time, ip_addr, user_id
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_operation_log
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="queryLogByLimit" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        log.ID, dic.name as operation_type,dict.name as business_type, content, user_id, org_id, org_name, create_time,
+        ip_addr, user_name
+        FROM app_operation_log log
+        LEFT JOIN t_dictionary dic on log.operation_type = dic.id
+        left join t_dictionary dict on log.business_type=dict.id
+        <where>
+            <if test="operationType != null">
+                AND operation_type=#{operationType,jdbcType=VARCHAR}
+            </if>
+            <if test="businessType != null">
+                AND business_type=#{businessType,jdbcType=VARCHAR}
+            </if>
+            <if test="userName != null">
+                AND user_name=#{userName,jdbcType=VARCHAR}
+            </if>
+            <if test="userId != null">
+                AND user_id=#{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="content != null">
+                AND content LIKE CONCAT('%','${content}','%')
+            </if>
+            <if test="startTime != null and endTime != null">
+                AND create_time BETWEEN #{startTime} AND #{endTime}
+            </if>
+            <if test="startTime != null and endTime == null">
+                AND create_time > #{startTime}
+            </if>
+            <if test="endTime != null and startTime == null">
+                AND create_time <![CDATA[  <  ]]>  #{endTime}
+            </if>
+        </where>
+        ORDER BY log.ID DESC
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from app_operation_log
+        where ID = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.bocom.domain.pac.AppOperationLogInfo">
+        insert into app_operation_log (ID, operation_type, business_type,content,
+        user_name, org_id, org_name,
+        create_time, ip_addr, user_id
+        )
+        values (#{id,jdbcType=INTEGER}, #{operationType,jdbcType=VARCHAR},#{businessType,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+        #{userName,jdbcType=VARCHAR}, #{orgId,jdbcType=VARCHAR}, #{orgName,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{ipAddr,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.bocom.domain.pac.AppOperationLogInfo">
+        insert into app_operation_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                ID,
+            </if>
+            <if test="operationType != null">
+                operation_type,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="orgName != null">
+                org_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="ipAddr != null">
+                ip_addr,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="operationType != null">
+                #{operationType,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgId != null">
+                #{orgId,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="ipAddr != null">
+                #{ipAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bocom.domain.pac.AppOperationLogInfo">
+        update app_operation_log
+        <set>
+            <if test="operationType != null">
+                operation_type = #{operationType,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="orgId != null">
+                org_id = #{orgId,jdbcType=VARCHAR},
+            </if>
+            <if test="orgName != null">
+                org_name = #{orgName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="ipAddr != null">
+                ip_addr = #{ipAddr,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bocom.domain.pac.AppOperationLogInfo">
+        update app_operation_log
+        set operation_type = #{operationType,jdbcType=VARCHAR},
+        content = #{content,jdbcType=VARCHAR},
+        user_name = #{userName,jdbcType=VARCHAR},
+        org_id = #{orgId,jdbcType=VARCHAR},
+        org_name = #{orgName,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        ip_addr = #{ipAddr,jdbcType=VARCHAR},
+        user_id = #{userId,jdbcType=VARCHAR}
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+
+    <update id="createHistoryTable" parameterType="java.util.Map">
+        create table app_operation_log_${tableName} as select * from app_operation_log where create_time <![CDATA[  <  ]]> #{startTime};
+    </update>
+    <delete id="deleteHistoryRecord" parameterType="java.util.Map">
+        DELETE from app_operation_log where create_time <![CDATA[  <  ]]> #{startTime};
+    </delete>
+</mapper>

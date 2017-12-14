@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration >
+    <classPathEntry location="d:/tools/maven/mavenLocalRepository/mysql/mysql-connector-Java/5.1.29/mysql-connector-java-5.1.29.jar"/>
+    <context id="Mysql" >
+        <commentGenerator>
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+        </commentGenerator>
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://192.168.1.196:3306/bocom_pac" userId="bocom" password="bocommysql" />
+        <javaModelGenerator targetPackage="com.bocom.domain.pac" targetProject="pac-util/src/main/java" />
+        <sqlMapGenerator targetPackage="mapper" targetProject="pac-service/src/main/resources" />
+        <javaClientGenerator targetPackage="com.bocom.dao" targetProject="pac-service/src/main/java" type="XMLMAPPER" />
+        <table schema="bocom" tableName="app_relation_info"
+               enableCountByExample="false"
+               enableUpdateByExample="false"
+               enableDeleteByExample="false"
+               enableSelectByExample="false"
+               selectByExampleQueryId="false">
+            <property name="useActualColumnNames" value="false"/>
+        </table>
+    </context>
+</generatorConfiguration>

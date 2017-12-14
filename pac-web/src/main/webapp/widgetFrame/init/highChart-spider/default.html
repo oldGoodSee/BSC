@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+	<script type="text/javascript" src="/pac-web/widgetFrame/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/init/resources/layer/layer.js"></script>
+	<script type="text/javascript" src="/pac-web/widgetFrame/init/resources/Highcharts-5.0.7/code/highcharts.js"></script>
+	<script type="text/javascript" src="/pac-web/widgetFrame/init/resources/Highcharts-5.0.7/code/highcharts-more.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/js/edit-1.0.js" id="editJs"></script>
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="/pac-web/widgetFrame/js/html5shiv.min.js"></script>
+      	<script src="/pac-web/widgetFrame/js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+    <div style="height:100%" id="container" ></div>
+  </body>
+  <script type="text/javascript" id="configJs"></script>
+  <script type="text/javascript" id="mainJs">
+    var init = new init();
+  	$(document).on("ready",function(){
+  		init.setFn([{
+  	      fn: function() {
+  	        $.ajax({
+  	          dataType: "json",
+  	          //type: "POST",
+  	          url: init.getUrl("getChartData"),
+  	          cache: false,
+  	          success: function(res) {
+  	              var list = [];
+  	              for(var i=0;i<res.series.length;i++){
+		  	          var obj = {
+							  name:res.series[i].cityName,
+							  data:[],
+							  pointPlacement: 'on'
+					   };
+					   for(var j=0;j<res.series[i].data.length;j++){
+						   if($.inArray(res.series[i].data[j].code , init.getColCodes("getChartData")) != -1){
+							   obj.data.push(res.series[i].data[j].data);
+							}
+					   }
+					   list.push(obj);
+  	              }
+	  	          $('#container').highcharts({
+	  	            chart: {
+	  	                polar: true,
+	  	                type: 'line'
+	  	            },
+			  	      credits: {
+			  	         enabled: false
+			  	      },
+	  	            title: {
+	  	                text: init.getTitle("getChartData"),
+	  	                x: -80
+	  	            },
+	  	            pane: {
+	  	                size: '80%'
+	  	            },
+	  	            xAxis: {
+	  	                categories: init.getColNames("getChartData"),
+	  	                tickmarkPlacement: 'on',
+	  	                lineWidth: 0
+	  	            },
+	  	            yAxis: {
+	  	                gridLineInterpolation: 'polygon',
+	  	                lineWidth: 0,
+	  	                min: 0
+	  	            },
+	  	            tooltip: {
+	  	                shared: true,
+	  	                pointFormat: '<span style="color:{series.color}">{series.name}: <b>${point.y:,.0f}</b><br/>'
+	  	            },
+	  	            legend: {
+	  	                align: 'right',
+	  	                verticalAlign: 'top',
+	  	                y: 70,
+	  	                layout: 'vertical'
+	  	            },
+	  	            series: list
+	  	        });
+  	          },
+  	          error: function() {
+  	            layer.alert("获取接口返回信息失败！");
+  	          }
+  	        });
+  	      },
+  	      urlId: "getChartData",
+  	      autoRun:true
+  	    }]);
+  		
+  		init.setUrl([{
+  	      info: "获取蜘蛛图的数据信息",
+  	      id: "getChartData",
+  	      type: "chart",
+  	      renderTo: "container",
+  	      colSet: {
+  	       	type:1 //0表示需要绑定页面dom，1表示通过js控件动态生成，根据选择的colNames自动进行，-1表示不绑定任何dom，仅用于获取数据，也不指定任何列
+  	      }
+  	    }]);
+  		
+  		 init.init();
+  	});
+  </script>
+</html>

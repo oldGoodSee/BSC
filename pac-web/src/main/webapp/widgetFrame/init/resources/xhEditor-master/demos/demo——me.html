@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>xhEditor demo2 : 自定义按钮</title>
+<link rel="stylesheet" href="common.css" type="text/css" media="screen" />
+<script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="../xheditor.js"></script>
+<script type="text/javascript" src="../xheditor_lang/zh-cn.js"></script>
+<script type="text/javascript">
+$(pageInit);
+function pageInit()
+{
+	$.extend(XHEDITOR.settings);
+	$('#elm').xheditor({skin:'o2007blue',tools:'Cut,Copy,Paste,Pastetext,|,Fontface,FontSize,Bold,Italic,Underline,|,FontColor,BackColor,|,Align,List,Outdent,Indent,Removeformat'});
+}
+</script>
+</head>
+<body>
+	<textarea id="elm" name="elm" rows="12" cols="80" style="width: 80%">
+		阿斯dad
+	</textarea>
+</body>
+</html>

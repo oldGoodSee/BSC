@@ -1,0 +1,50 @@
+{
+    "appId": "1024",
+    "appName": "临时作战队伍部署系统1",
+    "pageList": [{
+        "pageName": "禁毒线索查询",
+        "id":"1",
+        "url": "http://www.qq.com,001.html",
+        "type":"tab"
+    }, {
+        "pageName": "禁毒线索录入",
+        "id":"2",
+        "url": "http://www.baidu.com,002.html",
+        "type":"tab"
+    }, {
+        "pageName": "禁毒线索录入1",
+        "id":"2_1",
+        "url": "002.html",
+        "type":"tab"
+    }, {
+        "pageName": "禁毒线索录入2",
+        "id":"2_2",
+        "url": "001.html",
+        "type":"tab"
+    }, {
+        "pageName": "禁毒线索录入3",
+        "id":"2_3",
+        "url": "003.html",
+        "type":"tab"
+    },  {
+        "pageName": "户籍信息录入",
+        "id":"3",
+        "url": "021.html",
+        "type":"win",
+        "area":1
+    }, {
+        "pageName": "测试应用1",
+        "id":"4",
+        "url": "http://www.qq.com",
+        "type":"win",
+        "area":2
+    }, {
+        "pageName": "测试应用2",
+        "id":"5",
+        "url": "003.html",
+        "type":"win",
+        "area":3
+    }],
+    "roleId": "9",
+    "type": "common"
+}

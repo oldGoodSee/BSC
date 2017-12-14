@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+		<link rel="stylesheet" href="/BSC2/widgetFrame/css/bootstrap.min.css" />
+		<style type="text/css">
+			img{
+				display:inline-block;
+				margin:5px;
+				cursor:pointer;
+			}
+		</style>
+		<script type="text/javascript" src="/BSC2/widgetFrame/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/BSC2/widgetFrame/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+    	<script src="/BSC2/widgetFrame/js/html5shiv.min.js"></script>
+    	<script src="/BSC2/widgetFrame/js/respond.min.js"></script>
+		<![endif]-->
+  </head>
+
+  <body>
+  </body>
+  <script type="text/javascript">
+		var p = window.parent;
+		var id = (window.location.href).split("#")[1];
+		var list = [];
+		$(document).on("ready",function(){
+			if(id != undefined){
+				$.ajax({
+					dataType: "json",
+					//type: "POST",
+					url: 'list.json',
+					cache: false,
+					success: function(result) {
+						for(var i=0;i<result.length;i++){
+							if(result[i].groupId == id){
+								list = result[i].children;
+								break;
+							}
+						}
+						var innerStr = "";
+						for(var i=0;i<list.length;i++){
+							innerStr += '<img src="'+list[i].url+'" />';
+						}
+						$("body").html(innerStr);
+						$("body").append('<div><button style="float: right;">无图片</button></div>');
+					}
+				});
+			}
+			$("body").on("click","img",function(e){
+				var url = $(e.currentTarget).attr("src");
+				p.frames[p.$(".layui-layer").eq(0).find("iframe").eq(0).attr("name")].getUrl(url);
+				p.layer.close(p.iconsLayer);
+			});
+			$("body").on("click","button",function(e){
+				p.frames[p.$(".layui-layer").eq(0).find("iframe").eq(0).attr("name")].getUrl('');
+				p.layer.close(p.iconsLayer);
+			});
+  	});
+  </script>
+</html>

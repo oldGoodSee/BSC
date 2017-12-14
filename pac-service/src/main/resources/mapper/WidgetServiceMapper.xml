@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.WidgetServiceDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.PersonnelInformation">
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="id_card" property="id_card" jdbcType="VARCHAR"/>
+        <result column="job_title" property="job_title" jdbcType="VARCHAR"/>
+        <result column="graduation_time" property="graduation_time" jdbcType="TIMESTAMP"/>
+        <result column="entry_time" property="entry_time" jdbcType="TIMESTAMP"/>
+        <result column="nation" property="nation" jdbcType="VARCHAR"/>
+        <result column="birth_date" property="birth_date" jdbcType="TIMESTAMP"/>
+        <result column="political_status" property="political_status" jdbcType="VARCHAR"/>
+        <result column="highest_education" property="highest_education" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="selectPersonInfoByNameIdCard" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        name,sex,id_card,job_title,graduation_time,entry_time,nation,birth_date,political_status,highest_education,address
+        FROM personnel_information
+        <where>
+            <if test="idCard != null">
+                AND id_card=#{idCard,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name LIKE CONCAT('%','${name}','%')
+            </if>
+        </where>
+    </select>
+    <select id="selectPersonInfoByNameJobAddress" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        name,sex,id_card,job_title,graduation_time,entry_time,nation,birth_date,political_status,highest_education,address
+        FROM personnel_information
+        <where>
+            <if test="jobTitle != null">
+                AND job_title LIKE CONCAT('%','${jobTitle}','%')
+            </if>
+            <if test="address != null">
+                AND address LIKE CONCAT('%','${address}','%')
+            </if>
+            <if test="name != null">
+                AND name LIKE CONCAT('%','${name}','%')
+            </if>
+        </where>
+    </select>
+    <select id="selectPersonInfoByNameBirth" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        name,sex,id_card,job_title,graduation_time,entry_time,nation,birth_date,political_status,highest_education,address
+        FROM personnel_information
+        <where>
+            <if test="birthDate != null">
+                AND birth_date <![CDATA[  >  ]]> #{birthDate}
+            </if>
+            <if test="birthDateAfter != null">
+                AND birth_date <![CDATA[  <  ]]> #{birthDateAfter}
+            </if>
+            <if test="birthDateStart != null">
+                AND birth_date BETWEEN #{birthDateStart} AND #{birthDateEnd}
+            </if>
+            <if test="name != null">
+                AND name LIKE CONCAT('%','${name}','%')
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectStatistics" resultType="java.util.Map">
+        SELECT * FROM police_statistics
+    </select>
+
+    <select id="testSelect" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+        <if test="param != null">
+            ${param}
+        </if>
+        <if test="param == null">
+            *
+        </if>
+        FROM test
+        <where>
+            <if test="name != null">
+                AND name LIKE CONCAT('%','${name}','%')
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+
+    <select id="interfaceList" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT * FROM interface_list
+        <where>
+            <if test="type != null">
+                AND type = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="inputCount != null">
+                AND input_count >= #{inputCount,jdbcType=INTEGER}
+            </if>
+            <if test="interfaceName != null">
+                AND name like CONCAT('%',#{interfaceName},'%')
+            </if>
+        </where>
+    </select>
+    <select id="interfaceListByWidget" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT * FROM interface_list
+        <where>
+            <if test="type != null">
+                AND type = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="inputCount != null">
+                AND input_count = #{inputCount,jdbcType=INTEGER}
+            </if>
+            <if test="txt != null">
+                AND txt_num = #{txt,jdbcType=INTEGER}
+            </if>
+            <if test="select != null">
+                AND select_num = #{select,jdbcType=INTEGER}
+            </if>
+            <if test="date != null">
+                AND date_num = #{date,jdbcType=INTEGER}
+            </if>
+            <if test="interfaceName != null">
+                AND name like CONCAT('%',#{interfaceName},'%')
+            </if>
+        </where>
+    </select>
+    <select id="getCarInfoByIdCardCar" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT * FROM car_info
+        <where>
+            <if test="idCard != null">
+                AND idCard = #{idCard,jdbcType=VARCHAR}
+            </if>
+            <if test="plateNumber != null">
+                AND plateNumber LIKE CONCAT('%','${plateNumber}','%')
+            </if>
+        </where>
+    </select>
+</mapper>

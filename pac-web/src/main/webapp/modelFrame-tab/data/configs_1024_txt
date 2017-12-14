@@ -1,0 +1,65 @@
+{
+    "appId": "1024",
+    "appName": "临时作战队伍部署系统1",
+    "pageList": [{
+        "pageName": "我应该是第4个",
+        "id":"1",
+        "url": "http://www.qq.com,001.html",
+        "position":"0,1",
+    	"sort":4,
+        "win":[{
+        	"pageName": "qq",
+	        "url": "001.html",
+	        "sort":1,
+	        "area":1
+        },{
+        	"pageName": "百度",
+	        "url": "002.html",
+	        "sort":2,
+	        "area":3
+        }]
+    }, {
+        "pageName": "我应该是第2个",
+        "id":"2",
+        "url": "http://www.baidu.com",
+    	"sort":2,
+        "win":[{
+        	"pageName": "111",
+	        "url": "003.html",
+	        "sort":1,
+	        "area":2
+        },{
+        	"pageName": "222",
+	        "url": "002.html",
+	        "sort":4,
+	        "area":3
+        },{
+        	"pageName": "333",
+	        "url": "003.html",
+	        "sort":2,
+	        "area":1
+        },{
+        	"pageName": "444",
+	        "url": "003.html",
+	        "sort":0,
+	        "area":1
+        }]
+    }, {
+        "pageName": "我应该是第1个",
+        "id":"2_1",
+        "url": "002.html",
+    	"sort":1
+    }, {
+        "pageName": "我应该是第3个",
+        "id":"2_2",
+        "url": "001.html",
+    	"sort":3
+    }, {
+        "pageName": "我应该是第0个",
+        "id":"2_3",
+        "url": "003.html",
+    	"sort":0
+    }],
+    "roleId": "9",
+    "type": "common"
+}

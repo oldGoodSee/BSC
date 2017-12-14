@@ -1,0 +1,182 @@
+{
+	"success": true,
+	"list": [
+		 {
+			"img": "img/template0.jpg",
+			"html": [
+				{
+					"width": "100%",
+					"height": "100%",
+					"type": "item"
+				}
+			]
+		},{
+			"img": "img/template1.jpg",
+			"html": [
+				{
+					"width": "70%",
+					"height": "100%",
+					"type": "container",
+					"panel": [
+						{
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}, {
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}
+					]
+				}, {
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}
+			]
+		}, {
+			"img": "img/template2.jpg",
+			"html": [
+				{
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}, {
+					"width": "40%",
+					"height": "100%",
+					"type": "item"
+				}, {
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}
+			]
+		}, {
+			"img": "img/template3.jpg",
+			"html": [
+				{
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}, {
+					"width": "40%",
+					"height": "100%",
+					"type": "container",
+					"panel": [
+						{
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}, {
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}
+					]
+				}, {
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}
+			]
+		}, {
+			"img": "img/template4.jpg",
+			"html": [
+				{
+					"width": "30%",
+					"height": "100%",
+					"type": "item"
+				}, {
+					"width": "70%",
+					"height": "100%",
+					"type": "container",
+					"panel": [
+						{
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}, {
+							"width": "100%",
+							"height": "50%",
+							"type": "item"
+						}
+					]
+				}
+			]
+		}, {
+			"img": "img/template5.jpg",
+			"html": [
+				{
+					"width": "50%",
+					"height": "100%",
+					"type": "item"
+				}, {
+					"width": "50%",
+					"height": "100%",
+					"type": "item"
+				}
+			]
+		}, {
+			"img": "img/template6.jpg",
+			"html": [
+				{
+					"width": "100%",
+					"height": "50%",
+					"type": "item"
+				}, {
+					"width": "100%",
+					"height": "50%",
+					"type": "item"
+				}
+			]
+		}, {
+			"img": "img/template7.jpg",
+			"html": [
+				{
+					"width": "100%",
+					"height": "50%",
+					"type": "item"
+				}, {
+					"width": "100%",
+					"height": "50%",
+					"type": "container",
+					"panel": [
+						{
+							"width": "50%",
+							"height": "100%",
+							"type": "item"
+						}, {
+							"width": "50%",
+							"height": "100%",
+							"type": "item"
+						}
+					]
+				}
+			]
+		}, {
+			"img": "img/template8.jpg",
+			"html": [
+				{
+					"width": "100%",
+					"height": "50%",
+					"type": "container",
+					"panel": [
+						{
+							"width": "50%",
+							"height": "100%",
+							"type": "item"
+						}, {
+							"width": "50%",
+							"height": "100%",
+							"type": "item"
+						}
+					]
+				}, {
+					"width": "100%",
+					"height": "50%",
+					"type": "item"
+				}
+			]
+		}
+	]
+}

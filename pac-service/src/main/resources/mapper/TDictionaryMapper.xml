@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.TDictionaryDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.TDictionaryInfo">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type_id" property="typeId" jdbcType="INTEGER"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, name,type_id, type_name
+    </sql>
+    <select id="queryDictionary" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_dictionary
+        <where>
+            <if test="typeId != null">
+                AND type_id=#{typeId,jdbcType=INTEGER}
+            </if>
+            <if test="typeName != null">
+                AND type_name=#{typeName,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                AND id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+    <select id="queryDictionaryMap" resultType="java.util.Map" parameterType="java.util.Map">
+        SELECT
+        id, name,type_id typeId, type_name typeName
+        FROM t_dictionary
+        <where>
+            <if test="typeId != null">
+                AND type_id=#{typeId,jdbcType=INTEGER}
+            </if>
+            <if test="typeName != null">
+                AND type_name=#{typeName,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null">
+                AND name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test="id != null">
+                AND id=#{id,jdbcType=INTEGER}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+    <insert id="insert" parameterType="com.bocom.domain.pac.TDictionaryInfo">
+    insert into t_dictionary (id, name, type_id, 
+      type_name)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{typeId,jdbcType=INTEGER}, 
+      #{typeName,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertSelective" parameterType="com.bocom.domain.pac.TDictionaryInfo">
+        insert into t_dictionary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="typeId != null">
+                type_id,
+            </if>
+            <if test="typeName != null">
+                type_name,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="typeId != null">
+                #{typeId,jdbcType=INTEGER},
+            </if>
+            <if test="typeName != null">
+                #{typeName,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+</mapper>

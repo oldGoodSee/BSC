@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/pac-web/widgetFrame/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-table.min.css">
+    <script type="text/javascript" src="/pac-web/widgetFrame/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+    <script src="js/bootstrap-table-zh-CN.js"></script>
+    <script type="text/javascript" src="js/layer/layer.js"></script>
+    <script type="text/javascript" src="/pac-web/widgetFrame/js/edit-1.0.js" id="editJs"></script>
+    
+	  
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="/pac-web/widgetFrame/js/html5shiv.min.js"></script>
+      	<script src="/pac-web/widgetFrame/js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+    <div style="overflow-x: hidden; margin: 15px;" class="full-container">
+      <div class="row">
+        <div class="col-xs-8">
+          <input type="text"  id="searchInp" class="form-control" size="20" placeholder="请输入关键字" />
+        </div>
+        <div class="col-xs-4">
+          <button class="btn btn-default">搜索</button>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 20px;">
+        <div class="col-xs-12">
+           <table id="table1"
+	           data-toolbar="#toolbar"
+	           data-search="false"
+	           data-show-refresh="true"
+	           data-show-toggle="true"
+	           data-show-columns="true"
+	           data-show-export="true"
+	           data-detail-view="false"
+	           data-detail-formatter="detailFormatter"
+	           data-minimum-count-columns="2"
+	           data-show-pagination-switch="true"
+	           data-pagination="true"
+	           data-id-field="id"
+	           data-page-list="[10, 25, 50, 100, ALL]"
+	           data-show-footer="false"
+	           data-side-pagination="client">
+    	   </table>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript" id="configJs"></script>
+	  <script type="text/javascript" id="mainJs">
+	    var init = new init();
+	
+	    $(document).on("ready", function() {
+	    	init.setFn([{
+	  	      fn: function() {
+	  	        $.ajax({
+	  	          dataType: "json",
+	  	          //type: "POST",
+	  	          url: init.getUrl("search"),
+	  	          cache: false,
+	  	          success: function(result) {
+	  	            $('#table1').bootstrapTable('destroy');
+	  	            $('#table1').bootstrapTable({
+	  	              columns: getColumns(),
+	  	              data: result.page.list
+	  	            });
+	  	          },
+	  	          error: function() {
+	  	            layer.alert("获取接口返回信息失败！");
+	  	          }
+	  	        });
+	  	      },
+	  	      urlId: "search",
+	  	      autoRun:true
+	  	    }]);
+	  	
+	  	    init.setUrl([{
+	  	      info: "页面进入时及点击查询按钮时调用的查询地址",
+	  	      id: "search",
+	  	      type: "query",
+	  	      len: 3,
+	  	      renderTo: "table1",
+	  	      colSet: {
+	  	       	type:1 //0表示需要绑定页面dom，1表示通过js控件动态生成，根据选择的colNames自动进行，-1表示不绑定任何dom，仅用于获取数据，也不指定任何列
+	  	      }
+	  	    }]);
+	  	    
+	      $("button").eq(0).on("click", function() {
+	        $.ajax({
+	          dataType: "json",
+	          //type: "POST",
+	          url: init.getUrl("search"),
+	          data:{
+	        	  name:encodeURI($("#searchInp").val())
+	          },
+	          cache: false,
+	          success: function(result) {
+	            $('#table1').bootstrapTable('destroy');
+	            $('#table1').bootstrapTable({
+  	              columns: getColumns(),
+  	              data: result.page.list
+  	            });
+	          },
+	          error: function() {
+	            layer.alert("获取接口返回信息失败！");
+	          }
+	        });
+	      });
+	
+	      init.init();
+	    });
+		
+		function getColumns(){
+			var configCols = init.getColumns("search");
+			var columns = [];
+			for(var i=0;i<configCols.length;i++){
+				if(init.getColCodes("search")[i] == "sex"){
+					columns.push({
+	  	                field: init.getColCodes("search")[i],
+	  	                title: init.getColNames("search")[i],
+	  	                formatter: function(value, row, index) {
+	  	                	if(value){
+	  	                		if(value == 1){
+						        	return "男";
+						        }else{
+						        	return "女";
+						        }
+	  	                	}else{
+	  	                		return "-";
+	  	                	}
+					    }
+					});
+				}else{
+					columns.push({
+	  	                field: init.getColCodes("search")[i],
+	  	                title: init.getColNames("search")[i]
+					});
+				}
+			}
+			return columns;
+		}
+	  </script>
+</html>

@@ -1,0 +1,15 @@
+[
+	{
+		"title": "简单蓝色",
+		"borderType": "simpleBlue",
+		"borderWidth":2,
+		"cornerSize":51,
+		"borderOffset":1
+	}, {
+		"title": "简单红色",
+		"borderType": "simpleRed",
+		"borderWidth":1,
+		"cornerSize":51,
+		"borderOffset":0
+	}
+]

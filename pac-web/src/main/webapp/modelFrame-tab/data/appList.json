@@ -1,0 +1,20 @@
+{
+	"success":true,
+	"list":[
+		{
+			"appId":"1",
+			"pageName":"应用1",
+			"url":"001.html"
+		},
+		{
+			"appId":"2",
+			"pageName":"应用2",
+			"url":"002.html"
+		},
+		{
+			"appId":"3",
+			"pageName":"应用3",
+			"url":"003.html"
+		}
+	]
+}

@@ -1,0 +1,34 @@
+{
+	"title": "福建",
+	"titleEN": "fujian",
+	"points": [
+		{
+			"name": "第一分团",
+			"color": "#ff9900",
+			"points": [
+				{
+					"name": "莆田市",
+					"value": 22
+				},
+				{
+					"name": "厦门市",
+					"value": 32
+				}
+			]
+		},
+		{
+			"name": "第二分团",
+			"color": "#990000",
+			"points": [
+				{
+					"name": "三明市",
+					"value": 12
+				},
+				{
+					"name": "泉州市",
+					"value": 10
+				}
+			]
+		}
+	]
+}

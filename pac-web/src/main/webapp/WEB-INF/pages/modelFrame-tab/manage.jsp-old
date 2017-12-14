@@ -1,0 +1,2795 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>警务应用组装</title>
+    <link rel="shortcut icon" href="${pageContext.request.contextPath}/media/image/favicon.ico" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/modelFrame-tab/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/modelFrame-tab/css/main_manage.css" />
+    <script type="text/javascript" src="${pageContext.request.contextPath}/modelFrame-tab/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/modelFrame-tab/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/modelFrame-tab/js/layer/layer.js"></script>
+    <!--[if lt IE 9]>
+    <style type="text/css">
+        .layui-layer {
+            border: 1px solid #ccc;
+        }
+    </style>
+    <script src="${pageContext.request.contextPath}/modelFrame-tab/js/html5shiv.min.js"></script>
+    <script src="${pageContext.request.contextPath}/modelFrame-tab/js/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body id="body" oncontextmenu="return false;" style="background-size:100% 100%;">
+    <div class="sidebar" id="sideBar" style="display:none;">
+      <div class="list-container">
+        <ul id="appList"></ul>
+        <ul id="wyyList"></ul>
+      </div>
+    </div>
+		
+    <!-- Nav tabs -->
+    <div class="tab-title" id="tabTitleContainer" style="left:0; right:0;">
+      <ul class="nav nav-tabs" role="tablist" id="tabTitle" style="margin-top:200px;">
+      	<a href="javascript:void(0)" id="addTab"><span class="glyphicon glyphicon-plus"></span></a>
+      </ul>
+      <ul class="nav nav-tabs nav-ghost" id="tabTitleGhost" style="display: none; margin-top:200px;"></ul>
+    </div>
+    <!-- Tab panes -->
+    <div class="tab-content my-tab-content" id="tabContent" style="left:0; top:0; overflow:hidden;">
+      <!--<div role="tabpanel" class="tab-pane active" id="home">home...</div>-->
+    </div>
+    <div id="tabMore" class="dropdown" style="position:absolute; z-index: 100; right:10px; top:85px; display:none;">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown">
+        <span class="glyphicon glyphicon-list" style="font-size: 20px;"></span>
+    	</button>
+      <ul id="tabMoreList" class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1"></ul>
+    </div>
+
+    <div id="dragGhost" class="drag-container"></div>
+
+    <ul class="dropdown-menu menu-top" id="contextMenu" role="menu" aria-labelledby="dropdownMenu3" style="display: none; padding-bottom: 16px;">
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="createItem">创建容器</a>
+      </li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="createLayerRectangle">创建层（矩形）</a>
+      </li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="createLayerCircle">创建层（圆形）</a>
+      </li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="deleteApp">删除控件</a>
+      </li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="delete">删除容器</a>
+      </li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="getSizeAndPosition">获取容器位置及大小信息</a>
+      </li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="resetTab">重置tab</a>
+      </li>
+      <!--li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="resetTemplate">重置所有</a>
+      </li-->
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="resetHistoryTemplate">选择历史模板</a>
+      </li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="setSizeBtn">设置画布尺寸</a>
+      </li>
+			<li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="setOffsetBtn">设置偏移</a>
+      </li>
+			<!--li role="presentation">
+        <a role="menuitem" tabindex="-1" href="#" id="setBoxSize">设置网格尺寸</a>
+      </li-->
+    </ul>
+
+    <div class="cover" id="cover" style="display: none;"></div>
+
+    <button class="btn btn-default btn-edit-tab" id="btnEditTab" style="display:none;">
+	    <span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;tab排序及编辑
+		</button>
+    <button class="btn btn-default btn-left-tab disabled" id="btnLeftTab" style="display:none;">
+	    <span class="glyphicon glyphicon-chevron-left"></span>
+		</button>
+    <button class="btn btn-default btn-right-tab disabled" id="btnRightTab" style="display:none;">
+	    <span class="glyphicon glyphicon-chevron-right"></span>
+		</button>
+
+    <button class="btn btn-default" id="editOrView" title="编辑模式">
+	    <span class="glyphicon glyphicon-cog"></span>
+		</button>
+		
+		<button class="btn btn-default" id="save" title="保存" style="display:none;">
+	    <span class="glyphicon glyphicon-floppy-disk"></span>
+		</button>
+
+    <div id="historyContainer" style="display:none;">
+      <div class="histroy-content loading" id="historyContent"></div>
+    </div>
+    
+    <div id="containerSize" style="display:none;">
+    	<form style="margin: 20px;">
+			  <div class="form-group">
+			    <label for="tabWidth">画布长</label>
+		      <input type="number" class="form-control" id="tabWidth" placeholder="画布长">
+			  </div>
+	      <div class="form-group">
+			    <label for="tabHeight">画布宽</label>
+		      <input type="number" class="form-control" id="tabHeight" placeholder="画布宽">
+			  </div>
+			  <button type="button" class="btn btn-default" id="setSize" style="float:right; margin: 10px 10px 0 0;">确　定</button>
+			  <button type="button" class="btn btn-default" id="setSizeDefault" style="float:right; margin: 10px 10px 0 0;">设为默认（当前窗口大小）</button>
+			</form>
+    </div>
+		
+		<div id="containerOffset" style="display:none;">
+    	<form style="margin: 20px;">
+			  <div class="form-group">
+			    <label for="tabWidth">水平偏移</label>
+		      <input type="number" class="form-control" id="tabWidth" placeholder="水平偏移">
+			  </div>
+	      <div class="form-group">
+			    <label for="tabHeight">垂直偏移</label>
+		      <input type="number" class="form-control" id="tabHeight" placeholder="画布宽">
+			  </div>
+			  <button type="button" class="btn btn-default" id="setOffset" style="float:right; margin: 10px 10px 0 0;">确　定</button>
+			</form>
+    </div>
+  </body>
+  <script type="text/javascript">
+  	var userName = '${sessionUserInfo.userName }';
+  	//存储要发布的整个布局的id
+  	var appIdPublish;
+    //存储历史模板
+    var histroyObj;
+    //存储可组装应用信息
+    var storeApp;
+    //存储微应用信息
+    var storeWyy;
+    //存储布局模板信息
+    var storeTemplate;
+    //存储正在拖拽的应用的index
+    var dragIndex = -1;
+    //用于判断是否在拖拽，以及拖拽类型(可能是tab排序、应用添加、win的resize、布局编辑)
+    var draging = "";
+    //用于发布的完整json数组对象
+    var publishObj = [];
+    //用于存储当前tab及当前tab对应的index
+    var activeTab, activeTabId, activeIndex;
+    //用于存储tab拖拽开始和鼠标的偏移的位置
+    var tabDragX;
+    //用于存储需要拖拽的tab和相应的index
+    var toDragTab, toDragIndex;
+    //存放接收app的对象
+    var acceptItem;
+    //用于存储布局的html，是否正在递归调用中
+    var layoutStr = "",beginLayout = false;
+    //拖动应用的小方框
+    var drag;
+    //用于存储需要重命名的tab
+    var reNameTab;
+    //用于设置tab滚动的setInterval
+    var scrollFlag;
+    //tab标签页的总长度
+    var titleWidth = 0,
+	      tabLeftWidth = 0,
+	      tabRightWidth = 0;
+    //微应用列表窗口
+    var configWin;
+    //存储布局开始的位置信息
+    var layoutStartPosition={};
+    //存储布局时鼠标布局容器占用的格数
+    var positionNumXS,positionNumYS;	//开始
+  	var positionNumXE,positionNumYE;	//结束
+  	//进行布局拖拽的容器
+  	var containerDrag;
+  	//布局拖拽时的定位容器
+  	var containerGhost;
+  	//布局拖拽时鼠标相对容器的偏移
+  	var containerOffset = [];
+  	//布局resize拖拽时的鼠标初始位置
+  	var containerResizePosition = [];
+  	//布局resize拖拽时的初始大小
+  	var containerResizeSize = [];
+    //用于存储需要拖动位置及resize的layer层
+    var dragLayer;
+    //用于存储需要拖动的layer层的相对鼠标的位置偏移
+    var layerOffset = [];
+    //存储layer层开始的时候
+    var layerResizePosition = [];
+    //layer在resize拖拽时的初始大小
+  	var layerResizeSize = [];
+  	//右键菜单时选中的容器或层
+  	var seledContainer;
+  	//判断是否在编辑状态
+  	var inConfig = false;
+  	//重置尺寸的layer的index
+  	var resizeIndex;
+  	//设置的tab-pane的尺寸，写成全局变量是因为有可能二次编辑，需要存如publishObj
+  	var tabPaneSize = [];
+  	//用于记录鼠标右键选中的容器
+  	var rightTargetDom;
+  	//存储由于滚动条位置改变后的偏移量
+  	var scrollOffset = [0,0];
+  	//正在编辑修改的iframe dom
+  	var editingFrame;
+  	//存储正在修改内容或样式的控件对象
+  	var editingWidget;
+  	//存储正在修改内容或样式的控件是在第几个iframe中的
+  	var editingWidgetIndex;
+  	//正在编辑，需要关闭的layer
+  	var editingLayer;
+  	//正在编辑的数据
+  	var editingData;
+  	
+    function loginCasOut() {
+      $.ajax({
+        async: false,
+        cache: false,
+        contentType: "application/json",
+        type: 'POST',
+        dataType: "json",
+        url: "${pageContext.request.contextPath}" + "/manager/loginAction/loginCasOut",
+        error: function() {
+          myAlert('请求失败');
+        },
+        success: function(res) { //请求成功后处理函数。
+          if(res.success) {
+            window.location.href = "${casServerUrlPrefix}/logout?service=<%=request.getScheme()+": //"+request.getServerName()+":"+request.getServerPort()+request.getContextPath()%>/manager/loginAction/loginCas";
+          } else {
+            myAlert('退出失败！');
+          }
+        }
+      });
+    }
+
+    function copyHistory(id) {
+      if(-1 == parseInt(id)) {
+        return;
+      }
+      $.ajax({
+        async: false,
+        cache: false,
+        contentType: "application/json",
+        type: 'GET',
+        dataType: "json",
+        data: {
+          appId: id
+        },
+        url: "${pageContext.request.contextPath}" + "/manager/history/copyHistoryRecord",
+        error: function() {
+          myAlert('请求失败');
+        },
+        success: function(res) { //请求成功后处理函数。
+          //console.log("asdadsasd  =  " + JSON.stringify(res))
+          if(res.result == "success") {
+            var data = res.data;
+            // console.log("data  is  =  " + data)
+            $.ajax({
+              dataType: "json",
+              //type: "POST",
+              url: "${pageContext.request.contextPath}/modelFrame-tab/data/configs" + data + "_txt",
+              cache: false,
+              success: function(result) {
+                publishObj = result;
+                createAppAll(result);
+              }
+            });
+          }
+        }
+      });
+    }
+    
+    $(document).on("ready", function() {
+      drag = $("#dragGhost");
+      storeApp = ${packagingDtos};
+      addApp(storeApp);
+      //读取微应用
+      $.ajax({
+        dataType: "json",
+        //type: "POST",
+        url: "${pageContext.request.contextPath}/manager/widget/getWidgetList",
+        data: {
+          pageSize: 1000,
+          pageNum: 1
+        },
+        cache: false,
+        success: function(result) {
+          if(result.success) {
+            if(result.page) {
+              storeWyy = result.page.list;
+              addWyy(storeWyy);
+            }
+          } else {
+            myAlert("获取微应用列表失败！");
+          }
+        },
+        error: function() {
+          myAlert("获取微应用列表失败！");
+        }
+      });
+
+      var appId = ${appId};
+      if(-1 != appId) {
+        //尝试读取已在编辑的应用
+        $.ajax({
+          dataType: "json",
+          //type: "POST",
+          url: "${pageContext.request.contextPath}/modelFrame-tab/data/configs" + appId + "_txt",
+          cache: false,
+          success: function(result) {
+            publishObj = result;
+            createAppAll(result);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            if(jqXHR.status == 404) {
+              //$("#contentCenter").show();
+              //addTab("页面1");
+            }
+          }
+        });
+      }
+			
+			//切换编辑和预览状态
+      $("#editOrView").on("click", function() {
+      	requestFullScreen(document.documentElement);
+        var c = $(this).find("span").eq(0);
+        if(c.hasClass('glyphicon-cog')) {
+        	inConfig = true;
+        	$("#save").show();
+          configWin = layer.open({
+            title: "微应用列表",
+            type: 1,
+            shade: false,
+            closeBtn: 0,
+            offset:"r",
+            area: ['280px', '600px'],
+            content: $('#sideBar')
+          });
+          if(publishObj.length == 0){
+          	$("#addTab").trigger("click");
+          }
+          c.removeClass('glyphicon-cog').addClass('glyphicon-eye-open').attr('title', "查看模式");
+//        $("#tabTitleContainer").show();
+          $(".my-tab-content").addClass("my-tab-content-edit");
+          $(".container-move").show();
+          $(".container-resize").show();
+          $(".layer-win-move").show();
+          $(".layer-win-resize").show();
+					var frames = $("#tabContent iframe");
+					for(var i=0;i<frames.length;i++){
+						try{
+							frames.eq(i)[0].contentWindow.showTools();
+							$("#"+frames.eq(i).attr("id")+"_tools").show();
+						}catch(e){}
+					}
+					$(".my-container").removeClass("no-bg");
+					$(".my-tab-content").css({
+						"overflow":"auto"
+					});
+					$("#tabContent").css({
+						marginLeft:0,
+						marginTop:0
+					});
+        } else {
+        	inConfig = false;
+        	$("#save").hide();
+          layer.close(configWin);
+          c.removeClass('glyphicon-eye-open').addClass('glyphicon-cog').attr('title', "编辑模式");
+//        $("#tabTitleContainer").hide();
+          $(".my-tab-content").removeClass("my-tab-content-edit");
+          $(".container-move").hide();
+          $(".container-resize").hide();
+          $(".layer-win-move").hide();
+          $(".layer-win-resize").hide();
+					var frames = $("#tabContent iframe");
+					for(var i=0;i<frames.length;i++){
+						try{
+							frames.eq(i)[0].contentWindow.hideTools();
+							$("#"+frames.eq(i).attr("id")+"_tools").hide();
+						}catch(e){}
+					}
+					$(".my-container").addClass("no-bg");
+					$(".my-tab-content").css({
+						"overflow":"hidden"
+					});
+					$("#tabContent").css({
+						marginLeft:publishObj[0].offset[0]+'px',
+						marginTop:publishObj[0].offset[1]+'px'
+					});
+        }
+        $("#contentCenter").hide();
+        //清除布局的各种状态
+        draging = "";
+        $(".layoutDiv").remove();
+      });
+      
+      $("#save").on("click",function(){
+      	if (appId != -1) {
+          appIdPublish = appId;
+        } else {
+          appIdPublish = this.id;
+        }
+        publishObj[0].appName = decodeURI(encodeURI('${param.appName}'));
+      	var rate = getAppRate();
+	    	publishAjax(rate);
+      });
+
+      //-----------绑定事件
+      //获取历史模板
+      $("#resetHistoryTemplate").on("click", function() {
+        //直接打开
+        if(histroyObj) {
+          layer.open({
+            type: 1,
+            title: '请选择历史模板',
+            area: ['600px', '400px'],
+            shade: 0.3,
+            id: "histroySel",
+            content: $("#historyContainer")
+          });
+        } else { //需要向后台请求
+          layer.open({
+            type: 1,
+            title: '请选择历史模板',
+            area: ['600px', '400px'],
+            shade: 0.3,
+            id: "histroySel",
+            content: $("#historyContainer"),
+            success: function(index) {
+              $.ajax({
+                dataType: "json",
+                url: "${pageContext.request.contextPath}/manager/history/getAppHistory",
+                cache: false,
+                success: function(result) {
+                  if(result.result == "success") {
+                    histroyObj = result.data;
+                    var innerStr = "";
+                    for(var i = 0; i < histroyObj.length; i++) {
+                      innerStr += '<button type="button" style="margin:5px;" class="btn btn-default" id="history_' + histroyObj[i].appId + '">' + histroyObj[i].appName + '</button>'
+                    }
+                    $("#historyContent").removeClass("loading");
+                    $("#historyContent").html(innerStr);
+                    //选择历史模板
+                    $("#historyContent").find("button").on("click", function() {
+                      copyHistory($(this).attr("id").split("_")[1]);
+                    });
+                  } else {
+                    myAlert("获取历史模板信息失败！");
+                  }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                  myAlert("获取历史模板信息失败！");
+                }
+              });
+            }
+          });
+        }
+      });
+      
+      //增加滚动的偏移
+      $("#tabContent").scroll( function() {
+      	scrollOffset = [$(this).scrollLeft(),$(this).scrollTop()];
+      });
+      
+      //鼠标进过上方显示tab，在编辑状态下
+      $("#tabTitleContainer").on("mouseenter",function(){
+      	if(inConfig){
+      		if($("#tabTitleContainer").height() == 5){
+      			$("#tabTitleContainer").find("ul").css({
+	        		"marginTop":"0"
+	        	});
+	      		$("#tabTitleContainer").animate({
+		      		"height":"42px"
+		      	},300);
+		      }
+      	}
+      });
+      
+      $("#tabTitleContainer").on("mouseleave",function(){
+      	if(inConfig){
+      		if($("#tabTitleContainer").height() == 42){
+		      	$("#tabTitleContainer").animate({
+		      		"height":"5px"
+		      	},300,function(){
+		        	$("#tabTitleContainer").find("ul").css({
+		        		"marginTop":"200px"
+		        	});
+		      	});
+	      	}
+      	}
+      });
+
+      //新增tab
+      $('#addTab').on("click", function() {
+        if(publishObj.length >= 20) {
+          myAlert("大屏数量不得超过20个！");
+          return;
+        }
+        myPrompt('请输入大屏标题', '创建', function(index) {
+          if($("#inpTitle").val() == "") {
+            myAlert("请填写标题！");
+            return;
+          }
+          addTab($("#inpTitle").val());
+          layer.close(index);
+        });
+      });
+
+      //进入tab编辑状态
+      $("#btnEditTab").on("click", function() {
+        if(publishObj.length == 0) {
+          myAlert("请先创建页面！");
+          return;
+        }
+        if($(this).hasClass("btn-default")) { //生成待排序的列表
+          $("#add").prop("disabled", "disabled");
+          var liList = $("#tabTitle>li").clone();
+          for(var i = 0; i < liList.length; i++) {
+            liList.eq(i).find("a").eq(0).removeAttr("role");
+            liList.eq(i).find("a").eq(0).removeAttr("data-toggle");
+          }
+          liList.find(".glyphicon").removeClass("glyphicon-remove");
+          liList.find(".glyphicon").addClass("glyphicon-edit");
+          $("#tabTitleGhost").html(liList);
+          $(this).html('<span class="glyphicon glyphicon-ok"></span>&nbsp;&nbsp;完成');
+        } else { //tab排序完成
+          $("#add").removeProp("disabled");
+          $(this).html('<span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;tab排序及编辑');
+          var liList = $("#tabTitleGhost>li").clone();
+          liList.find(".glyphicon").removeClass("glyphicon-edit");
+          liList.find(".glyphicon").addClass("glyphicon-remove");
+          liList.removeAttr("title");
+          for(var i = 0; i < liList.length; i++) {
+            liList.eq(i).find("a").eq(0).attr("role", "tab");
+            liList.eq(i).find("a").eq(0).attr("data-toggle", "tab");
+          }
+          $("#tabTitle").html(liList);
+          //需要重新确定activeTab
+          activeTab = $("#tabTitle").find(".active").eq(0);
+          activeTabId = parseInt(activeTab.children().eq(0).attr("href").replace(/#tab/g, ""));
+          activeIndex = activeTab.index();
+        }
+        $(this).toggleClass("btn-default");
+        $(this).toggleClass("btn-primary");
+        $("#tabTitle").toggle();
+        $("#tabTitleGhost").toggle();
+      });
+
+      //tab标题左右滚动
+      //右
+      $("#btnRightTab").on("mousedown", function() {
+        if($(this).hasClass("disabled")) {
+          return;
+        }
+        if($("#btnLeftTab").hasClass("disabled")) {
+          $("#btnLeftTab").removeClass("disabled");
+        }
+        scrollFlag = setInterval(function() {
+          var ul = $("#tabTitle");
+          var marginL = ul.css("marginLeft") ? parseInt(ul.css("marginLeft")) : 0;
+          var containerW = $("#tabTitleContainer").width();
+          ul.css({
+            "marginLeft": (marginL - 4) + 'px'
+          });
+          if(marginL + titleWidth - 4 <= containerW) {
+            $("#btnRightTab").addClass("disabled");
+            //设置disabled会导致mouseup不触发，所以设置tabRightWidth和tabLeftWidth必须在这里进行
+            tabRightWidth = 0;
+            tabLeftWidth = titleWidth <= containerW ? 0 : titleWidth - containerW;
+            //这里不要忘了那个ghost的兄弟
+            $("#tabTitleGhost").css({
+              "marginLeft": $("#tabTitle").css("marginLeft")
+            });
+            clearInterval(scrollFlag);
+          }
+        }, 30);
+      });
+      //左
+      $("#btnLeftTab").on("mousedown", function() {
+        if($(this).hasClass("disabled")) {
+          return;
+        }
+        if($("#btnRightTab").hasClass("disabled")) {
+          $("#btnRightTab").removeClass("disabled");
+        }
+        scrollFlag = setInterval(function() {
+          var ul = $("#tabTitle");
+          var marginL = ul.css("marginLeft") ? parseInt(ul.css("marginLeft")) : 0;
+          var containerW = $("#tabTitleContainer").width();
+          ul.css({
+            "marginLeft": (marginL + 4) + 'px'
+          });
+          if(marginL + 4 >= 0) {
+            $("#btnLeftTab").addClass("disabled");
+            //设置disabled会导致mouseup不触发，所以设置tabRightWidth和tabLeftWidth必须在这里进行
+            tabLeftWidth = 0;
+            tabRightWidth = titleWidth <= containerW ? 0 : titleWidth - containerW;
+            //这里不要忘了那个ghost的兄弟
+            $("#tabTitleGhost").css({
+              "marginLeft": $("#tabTitle").css("marginLeft")
+            });
+            clearInterval(scrollFlag);
+          }
+        }, 30);
+      });
+
+      //因为窗口大小变化必须通过鼠标，所以可以通过mouseup来确定tabLeftWidth和tabRightWidth的大小
+      //设置disabled样式会导致mouseup不触发
+      $("#btnRightTab").on("mouseup", function() {
+        var marginL = $("#tabTitle").css("marginLeft");
+        tabLeftWidth = Math.abs(parseInt(marginL));
+        tabRightWidth = titleWidth - $("#tabTitleContainer").width() - tabLeftWidth;
+        $("#tabTitleGhost").css({
+          "marginLeft": marginL
+        });
+        clearInterval(scrollFlag);
+      });
+      $("#btnLeftTab").on("mouseup", function() {
+        var marginL = $("#tabTitle").css("marginLeft");
+        tabLeftWidth = Math.abs(parseInt(marginL));
+        tabRightWidth = titleWidth - $("#tabTitleContainer").width() - tabLeftWidth;
+        $("#tabTitleGhost").css({
+          "marginLeft": marginL
+        });
+        clearInterval(scrollFlag);
+      });
+
+      //进入tab排序状态
+      $("#tabTitleGhost").on("mousedown", "li", function(e) {
+        e.preventDefault();
+        if($(e.target).hasClass("glyphicon")) {
+          return;
+        }
+        draging = "tabDragStart";
+        toDragTab = $(e.currentTarget);
+        tabDragX = e.pageX - toDragTab.offset().left;
+        toDragTab.css({
+          "position": "absolute",
+          "zIndex": 500,
+          "top": "0",
+          "left": (toDragTab.offset().left - 318) + "px"
+        });
+        //创建tabGhost,用于占位及表示拖拽至的位置
+        var tabGhost = '<div class="tab-ghost" style="width:' + (toDragTab.width() - 2) + 'px; height:' + toDragTab.height() + 'px;" id="tabGhost"></div>';
+        //进入这里之前已经有判断，不存在只有一个tab的情况
+        toDragIndex = toDragTab.index();
+        toDragTab.after(tabGhost);
+        try {
+          document.getElementById("cover").setCapture();
+        } catch(e) {}
+        return false;
+      });
+
+      //重命名
+      $("#tabTitleGhost").on("click", ".glyphicon", function(e) {
+        e.preventDefault();
+        reNameTab = $(e.currentTarget).parent().parent();
+        myPrompt("请输入新的标题。", '重命名', function(index) {
+          if($("#inpTitle").val() == "") {
+            myAlert("请填写标题！");
+            return;
+          }
+          reNameTab.children().eq(0).html($("#inpTitle").val() + ' <span class="glyphicon glyphicon-edit"></span>');
+          publishObj[reNameTab.index()].pageName = $("#inpTitle").val();
+          layer.close(index);
+        });
+        return false;
+      });
+
+      //tab关闭
+      $("#tabTitle").on("click", ".glyphicon-remove", function(e) {
+        e.preventDefault();
+        var tab = $(e.currentTarget).parent().parent();
+        var jqId = $(this).parent().attr("href");
+        var closeIndex = tab.index()-1;
+        var toActiveTab;
+        //设置左右按钮及tabLeftWidth和tabRightWidth
+        setDisabled(tab, -1);
+        //清除绑定事件
+        tab.find("a").off("click");
+        tab.find("span").off("click");
+        $(jqId).find(".item").off("mouseenter");
+        $(jqId).find(".item").off("mouseleave");
+        $(jqId).find(".resize-horizontal").off("click");
+        $(jqId).find(".resize-vertical").off("click");
+        //如果需要关闭的tab已打开，则关闭附加的win(全部关闭)
+        if(closeIndex == activeIndex) {
+          //这里不能使用layer.closeAll(),因为会把其他tab的win也关闭掉
+          for(var i = 0; i < publishObj[activeIndex].layer.length; i++) {
+            $("#"+publishObj[activeIndex].layer[i].id).remove();
+          }
+          //确认需要连带打开前面或者后面的tab，不能直接用click，否则会影响activeIndex的正确性
+          if(closeIndex < tab.parent().children().length - 2) { //不是最后一个
+            toActiveTab = tab.next();
+          } else if(closeIndex == tab.parent().children().length - 2) { //是最后一个
+            toActiveTab = tab.prev();
+          } else {} //只有一个
+        } else {
+          //这里需要判断关闭tab在激活tab之前还是之后
+          //如关闭窗口在激活窗口之前，则它会影响activeIndex的值
+          if(activeIndex > closeIndex) {
+            activeIndex--;
+          }
+        }
+        //关闭tab
+        tab.remove();
+        $(jqId).remove();
+        //清除待发布obj中对应tab
+        publishObj.splice(closeIndex, 1);
+        if(toActiveTab) {
+          if(toActiveTab.length != 0) {
+            setActive(toActiveTab.find("a").eq(0));
+          }
+        }
+        if(publishObj.length == 0) {
+          $("#contentCenter").show();
+        }
+      });
+
+      //添加tab和win之间的连带关系
+      $("#tabTitle").on('click', "li>a", function(e) {
+        if($(e.target).hasClass("glyphicon-remove")) {
+          return;
+        }
+        var li = $(e.currentTarget).parent();
+        if(li.hasClass("active")) {
+          return;
+        }
+        //切换window，先关闭全部window
+        e.preventDefault();
+        $(this).tab('show');
+        activeTab = li;
+        activeTabId = parseInt($(e.currentTarget).attr("href").replace(/#tab/g, ""));
+        activeIndex = activeTab.index()-1;
+      });
+      
+      //布局开始
+      $("#tabContent").on("mousedown", ".active", function(e) {
+      	//不在编辑状态，则不进行布局
+      	if(!inConfig){
+      		return;
+      	}
+        if(1 == e.which){
+        	//选中了容器
+	      	if($(e.target).hasClass("container-move") || $(e.target).hasClass("my-container") || $(e.target).hasClass("container-resize")){
+	      		return;
+	      	}
+	      	//选中了透明层
+	      	if($(e.target).hasClass("layer-win-move") || $(e.target).hasClass("layer-win") || $(e.target).hasClass("layer-win-resize")){
+	      		return;
+	      	}
+					//选中了动作条
+	      	if($(e.target).hasClass("frame-tools") || $(e.target).parent().hasClass("frame-tools")){
+	      		return;
+	      	}
+	      	//已经创建编辑布局容器
+	      	if($(e.target).hasClass("layoutDiv")){
+	      		return;
+	      	}
+	      	if($("#tabContent").find(".active").find(".layoutDiv").length>0){
+	      		$("#tabContent").find(".active").find(".layoutDiv").eq(0).remove();
+	      	}
+        	draging = "layout";
+        	layoutStartPosition.x = e.pageX + scrollOffset[0];
+        	layoutStartPosition.y = e.pageY + scrollOffset[1];
+        	positionNumXS = Math.floor(layoutStartPosition.x/100);
+        	positionNumYS = Math.floor(layoutStartPosition.y/100);
+        	var layoutDiv = '<div class="layoutDiv" style="width:100px; height:100px; left:'+positionNumXS*100+'px; top:'+positionNumYS*100+'px;"></div>'
+        	$("#tabContent").find(".active").append(layoutDiv);
+        }
+      });
+      
+      //容器位置拖拽
+      $("#tabContent").on("mousedown", ".active .container-move", function(e) {
+      	if(2 == e.which){
+      		return;
+      	}else if(3 == e.which){
+      		rightTargetDom = $(e.currentTarget).parent();
+      		return;
+      	}
+        draging = "layoutMove";
+        containerDrag = $(e.currentTarget).parent();
+        containerOffset = [e.pageX - containerDrag.position().left,e.pageY - containerDrag.position().top];
+        $("#tabContent").find(".active").append('<div class="layout-ghost" style="width:'+containerDrag.width()+'px; height:'+containerDrag.height()+'px; left:'+(containerDrag.position().left+scrollOffset[0])+'px; top:'+(containerDrag.position().top+scrollOffset[1])+'px;"></div>');
+	      containerGhost = $("#tabContent").find(".active .layout-ghost");
+	      if(publishObj[activeIndex].container[publishObj[activeIndex].container.length-1].id != containerDrag.attr("id")){
+	      	reOrder(containerDrag.attr("id"),"container");
+	      	reIndex("container");
+	      }
+	      $("#tabContent").find(".active").find(".layoutDiv").remove();
+      });
+      
+      //透明层移动
+      $("body").on("mousedown", ".layer-win-move", function(e) {
+      	if(2 == e.which){
+      		return;
+      	}else if(3 == e.which){
+      		rightTargetDom = $(e.currentTarget).parent();
+      		return;
+      	}
+        dragLayer = $(e.currentTarget).parent();
+        dragLayer.css({
+          left: dragLayer.position().left +scrollOffset[0] + "px",
+          top: dragLayer.position().top + scrollOffset[1] + "px",
+          margin: 0
+        });
+        layerOffset = [dragLayer.position().left - e.pageX, dragLayer.position().top - e.pageY];
+        draging = "layerMove";
+        if(publishObj[activeIndex].layer[publishObj[activeIndex].layer.length-1].id != dragLayer.attr("id")){
+	      	reOrder(dragLayer.attr("id"),"layer");
+	      	reIndex("layer");
+	      }
+        $("#tabContent").find(".active").find(".layoutDiv").remove();
+      });
+      
+      //容器大小拖拽
+      $("#tabContent").on("mousedown", ".active .container-resize", function(e) {
+      	if(2 == e.which){
+      		return;
+      	}else if(3 == e.which){
+      		rightTargetDom = $(e.currentTarget).parent();
+      		return;
+      	}
+        draging = "layoutResize";
+        containerDrag = $(e.currentTarget).parent();
+        containerResizePosition = [e.pageX+scrollOffset[0],e.pageY+scrollOffset[1]];
+        containerResizeSize = [containerDrag.width(),containerDrag.height()];
+        $("#tabContent").find(".active").append('<div class="layout-ghost" style="width:'+containerDrag.width()+'px; height:'+containerDrag.height()+'px; left:'+(containerDrag.position().left+scrollOffset[0])+'px; top:'+(containerDrag.position().top+scrollOffset[1])+'px;"></div>');
+	      containerGhost = $("#tabContent").find(".active .layout-ghost");
+	      if(publishObj[activeIndex].container[publishObj[activeIndex].container.length-1].id != containerDrag.attr("id")){
+	      	reOrder(containerDrag.attr("id"),"container");
+	      	reIndex("container");
+	      }
+      });
+      
+      //透明层大小拖拽
+      $("#tabContent").on("mousedown", ".active .layer-win-resize", function(e) {
+      	if(2 == e.which){
+      		return;
+      	}else if(3 == e.which){
+      		rightTargetDom = $(e.currentTarget).parent();
+      		return;
+      	}
+      	draging = "layerResize";
+        dragLayer = $(e.currentTarget).parent();
+        layerResizePosition = [e.pageX,e.pageY];
+        layerResizeSize = [dragLayer.width(),dragLayer.height()];
+        if(publishObj[activeIndex].layer[publishObj[activeIndex].layer.length-1].id != dragLayer.attr("id")){
+	      	reOrder(dragLayer.attr("id"),"layer");
+	      	reIndex("layer");
+	      }
+      });
+
+      //右键菜单
+      $("#tabContent").on("mousedown", ".active", function(e) {
+      	//不在编辑状态，则不显示右键菜单
+      	if(!inConfig){
+      		return;
+      	}
+        if(3 == e.which) {
+      		var container = $(e.target);
+      		if(container.hasClass("layoutDiv")){	//在布局状态，不可删除
+      			$("#delete").parent().hide();
+      			$("#delete").parent().next().hide();
+      			$("#createItem").parent().show();
+      			$("#createItem").parent().next().show();
+      			$("#getSizeAndPosition").parent().hide();
+      			$("#getSizeAndPosition").parent().next().hide();
+      			$("#deleteApp").hide();
+      		}else if(container.hasClass("container-move") || container.hasClass("container-resize") || container.hasClass("layer-win-move") || container.hasClass("layer-win-resize")){		//已创建容器或者层，不可再次创建
+      			$("#delete").parent().show();
+      			$("#delete").parent().next().show();
+      			$("#createItem").parent().hide();
+      			$("#createItem").parent().next().hide();
+      			$("#getSizeAndPosition").parent().show();
+      			$("#getSizeAndPosition").parent().next().show();
+      			seledContainer = container.parent();
+      			$("#deleteApp").show();
+      		}else{		//点击页面其他地方，只有重置功能
+      			$("#delete").parent().hide();
+      			$("#delete").parent().next().hide();
+      			$("#createItem").parent().hide();
+      			$("#createItem").parent().next().hide();
+      			$("#getSizeAndPosition").parent().hide();
+      			$("#getSizeAndPosition").parent().next().hide();
+      			$("#deleteApp").hide();
+      		}
+          var contextMenu = $("#contextMenu");
+          contextMenu.css({
+            left: e.pageX + "px",
+            top: e.pageY + "px"
+          });
+          $("#contextMenu").show(300);
+        }
+      });
+
+      //隐藏右键菜单
+      $("body").on("mousedown", function(e) {
+        if(1 == e.which) {
+          setTimeout(function() {
+            $("#contextMenu").hide(300);
+          }, 100);
+        }
+      });
+			
+			//创建容器
+			$("#createItem").on("click", function() {
+        var layoutDiv = $("#tabContent").find(".active").find(".layoutDiv").eq(0);
+        layoutDiv.addClass("my-container").removeClass("layoutDiv");
+        layoutDiv.attr("id",(new Date()).getTime());
+				//创建publishObj相关对象
+        publishObj[activeIndex].container.push({
+        	id:layoutDiv.attr("id"),
+        	width:layoutDiv.width(),
+        	height:layoutDiv.height(),
+        	left:layoutDiv.position().left+scrollOffset[0],
+        	top:layoutDiv.position().top+scrollOffset[1]
+        });
+        layoutDiv.css({
+        	zIndex: publishObj[activeIndex].container.length
+        });
+        var inner = '<div class="container-move"></div>' +
+        						'<iframe frameborder="0" class="active-frame"></iframe>' +
+        						'<div class="container-resize resize-b-r"></div>';
+        						
+//      						'<div class="container-resize resize-t"></div>' +
+//      						'<div class="container-resize resize-r"></div>' +
+//      						'<div class="container-resize resize-b"></div>' +
+//      						'<div class="container-resize resize-l"></div>' +
+//      						'<div class="container-resize resize-t-r"></div>' +
+//      						'<div class="container-resize resize-b-r"></div>' +
+//      						'<div class="container-resize resize-b-l"></div>' +
+//      						'<div class="container-resize resize-t-l"></div>';
+        layoutDiv.append(inner);
+        reIndex("container");
+      });
+      
+      //新增透明层（矩形）
+      $('#createLayerRectangle').on("click", function() {
+        //如果没有创建tab则不允许拖拽
+        if($("#tabTitle").find(".active").length == 0) {
+          myAlert("请先创建页面！")
+          return;
+        }
+        createLayer("rectangle");
+        reIndex("layer");
+      });
+      
+      //新增透明层（圆形）
+      $('#createLayerCircle').on("click", function() {
+        //如果没有创建tab则不允许拖拽
+        if($("#tabTitle").find(".active").length == 0) {
+          myAlert("请先创建页面！")
+          return;
+        }
+        createLayer("circle");
+        reIndex("layer");
+      });
+			
+			//重置tab
+			$("#resetTab").on("click",function(){
+				publishObj[activeIndex].container = [];
+				publishObj[activeIndex].layer = [];
+				$("#tabContent").find(".active").empty();
+			});
+			
+			//删除url
+			$("#deleteApp").on("click", function() {
+				var list;
+				//需要判断是层还是容器
+      	if(seledContainer.hasClass("my-container")){	//容器
+	      	list = publishObj[activeIndex].container;
+      	}else{	//层
+      		list = publishObj[activeIndex].layer;
+      	}
+      	for(var i=0;i<list.length;i++){
+        	if(list[i].id == seledContainer.attr("id")){
+        		var urlList = list[i].url;
+        		var pageNameList = list[i].pageName;
+        		var appTypeList = list[i].appType;
+        		var appIdList = list[i].appId;
+        		var frameId = list[i].frameId;
+						
+						//这限都不一定有
+        		var color = list[i].color;
+						var styleObj = list[i].styleObj;
+						var chartType = list[i].chartType;
+						var data = list[i].data;
+						var useUserData = list[i].useUserData;
+						var speed = list[i].speed;
+						
+        		var activeFrame = seledContainer.find(".active-frame").eq(0);
+        		var frames = seledContainer.find("iframe");
+        		for(var j=0;j<urlList.length;j++){
+        			if(activeFrame.attr("src").indexOf(urlList[j]) != -1){
+        				if(j != urlList.length-1){  //有下一个
+        					frames.eq(j+1).addClass("active-frame");
+        				}else{
+        					frames.eq(0).addClass("active-frame");
+        				}
+								//删除控制
+								
+								if($("#"+activeFrame.attr("id")+"_tools").length>0){
+									$("#"+activeFrame.attr("id")+"_tools").remove();
+								}
+        				if(frames.length>1){
+      						activeFrame.remove();
+        				}else{
+        					activeFrame.attr("src","");
+        				}
+        				urlList.splice(j,1);
+        				pageNameList.splice(j,1);
+        				appTypeList.splice(j,1);
+        				appIdList.splice(j,1);
+        				frameId.splice(j,1);
+								if(typeof(color)!="undefined"){
+									color.splice(j,1);
+								}
+        				if(typeof(styleObj)!="undefined"){
+									styleObj.splice(j,1);
+								}
+								if(typeof(chartType)!="undefined"){
+									chartType.splice(j,1);
+								}
+								if(typeof(data)!="undefined"){
+									data.splice(j,1);
+								}
+								if(typeof(useUserData)!="undefined"){
+									useUserData.splice(j,1);
+								}
+								if(typeof(speed)!="undefined"){
+									speed.splice(j,1);
+								}
+        				break;
+        			}
+        		}
+        		break;
+        	}
+        }
+			});
+			
+			//删除容器
+      $("#delete").on("click", function() {
+      	//需要判断是层还是容器
+      	if(seledContainer.hasClass("my-container")){	//容器
+	      	for(var i=0;i<publishObj[activeIndex].container.length;i++){
+	        	if(publishObj[activeIndex].container[i].id == seledContainer.attr("id")){
+	        		publishObj[activeIndex].container.splice(i,1);
+	        		break;
+	        	}
+	        }
+	      	seledContainer.remove();
+        	reIndex("container");
+      	}else{	//层
+      		for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+	        	if(publishObj[activeIndex].layer[i].id == seledContainer.attr("id")){
+	        		publishObj[activeIndex].layer.splice(i,1);
+	        		break;
+	        	}
+	        }
+      		seledContainer.remove();
+        	reIndex("layer");
+      	}
+      });
+      
+      $("#getSizeAndPosition").on("click",function(){
+      	var info = getPoistionInfo(rightTargetDom)
+      	myAlert("长："+info.w+"，  高："+info.h+"，  x："+info.x+"，  y："+info.y);
+      });
+			
+			//重新选择历史模板
+      $("#resetTemplate").on("click", function() {
+        for(var i = 0; i < publishObj[activeIndex].layer.length; i++) {
+          $("#" + publishObj[activeIndex].win[i].id).remove();
+        }
+        publishObj[activeIndex].container = [];
+        publishObj[activeIndex].layer = [];
+        $("#tabContent").find(".active").eq(0).empty();
+      });
+      
+      //弹出设置画布尺寸窗口
+      $("#setSizeBtn").on("click",function(){
+      	//不论是页面创建，还是历史记录读取，都会有tabPaneSize
+	      var inps = $("#containerSize").find("input");
+      	inps.eq(0).val(tabPaneSize[0]);
+      	inps.eq(1).val(tabPaneSize[1]);
+      	resizeIndex = layer.open({
+      		type: 1,
+				  title: "设置画布尺寸",
+				  area:["400px","300px"],
+				  content: $("#containerSize")
+      	});
+      });
+      
+      //实际设置尺寸
+      $("#setSize").on("click",function(){
+      	var inps = $("#containerSize").find("input");
+      	var w = parseInt(inps.eq(0).val());
+      	var h = parseInt(inps.eq(1).val());
+      	if(h&w){
+      		tabPaneSize = [w,h];
+      		$("#tabContent").find(".tab-pane").css({
+      			"width":w+"px",
+      			"height":h+"px"
+      		});
+      		for(var i in publishObj){
+      			publishObj[i].size = tabPaneSize;
+      		}
+      		layer.close(resizeIndex);
+      	}else{
+      		myAlert("请输入正确的长宽参数！");
+      	}
+      });
+      
+      //实际设置尺寸为默认值
+      $("#setSizeDefault").on("click",function(){
+      	var inps = $("#containerSize").find("input");
+      	var w = $("#tabContent").width();
+      	var h = $("#tabContent").height()
+      	inps.eq(0).val(w);
+      	inps.eq(1).val(h);
+    		tabPaneSize = [w,h];
+    		$("#tabContent").find(".tab-pane").css({
+    			"width":w+"px",
+    			"height":h+"px"
+    		});
+    		layer.close(resizeIndex);
+      });
+			
+			//弹出设置偏移量窗口
+      $("#setOffsetBtn").on("click",function(){
+      	//不论是页面创建，还是历史记录读取，都会有tabPaneSize
+				var x = 0,y=0;
+				if(publishObj[activeIndex].offset){
+					x = publishObj[activeIndex].offset[0];
+					y = publishObj[activeIndex].offset[1];
+				}
+	      var inps = $("#containerOffset").find("input");
+      	inps.eq(0).val(x);
+      	inps.eq(1).val(y);
+      	resizeIndex = layer.open({
+      		type: 1,
+				  title: "设置画布尺寸",
+				  area:["400px","300px"],
+				  content: $("#containerOffset")
+      	});
+      });
+			
+			//实际设置偏移
+      $("#setOffset").on("click",function(){
+      	var inps = $("#containerOffset").find("input");
+      	var x = parseInt(inps.eq(0).val())?parseInt(inps.eq(0).val()):0;
+      	var y = parseInt(inps.eq(1).val())?parseInt(inps.eq(1).val()):0;
+				
+				for(var i in publishObj){
+					publishObj[i].offset = [x,y];
+				}
+				layer.close(resizeIndex);
+      });
+
+      //拖拽移动事件，包括app拖拽及tab内容布局修改拖拽
+      $(document).mousemove(function(e) {
+        switch(draging) {
+          case "app": //拖动左侧应用
+            drag.css({
+              "left": (e.pageX - 50) + "px",
+              "top": (e.pageY - 20) + "px"
+            });
+            break;
+          case "wyy": //拖动左侧应用
+            drag.css({
+              "left": (e.pageX - 50) + "px",
+              "top": (e.pageY - 20) + "px"
+            });
+            break;
+          case "tabDragStart": //tab拖拽开始
+            toDragTab.css({
+              "left": (e.pageX - 318 - tabDragX) + "px"
+            });
+            var tabList = $("#tabTitleGhost").find("li");
+            //这里比较复杂，要判断tab是向前拖还是向后拖
+            if(toDragTab.position().left < $("#tabGhost").position().left) { //往前拖
+              //判断应该出现在哪个位置
+              for(var i = toDragIndex - 1; i >= 0; i--) {
+                if(tabList.eq(i).children().eq(0).attr("href") != toDragTab.children().eq(0).attr("href")) {
+                  if(Math.abs(tabList.eq(i).position().left - toDragTab.position().left) < 20) {
+                    tabList.eq(i).before($("#tabGhost"));
+                    break;
+                  }
+                }
+              }
+            } else if(toDragTab.position().left > $("#tabGhost").position().left) { //往后拖
+              //判断应该出现在哪个位置
+              for(var i = toDragIndex + 1; i < tabList.length; i++) {
+                if(tabList.eq(i).children().eq(0).attr("href") != toDragTab.children().eq(0).attr("href")) {
+                  if(Math.abs(tabList.eq(i).position().left + tabList.eq(i).width() - toDragTab.position().left - toDragTab.width()) < 20) {
+                    tabList.eq(i).after($("#tabGhost"));
+                    break;
+                  }
+                }
+              }
+            }
+            break;
+          case "layerMove":
+            dragLayer.css({
+              left: (e.pageX + scrollOffset[0] + layerOffset[0]) + "px",
+              top: (e.pageY + scrollOffset[1] + layerOffset[1]) + "px",
+            });
+          	//修改publishObj
+          	//必然是修改publishObj[activeIndex].layer最后一个
+          	var editingObj = publishObj[activeIndex].layer[publishObj[activeIndex].layer.length-1];
+          	editingObj.left = e.pageX + scrollOffset[0] + layerOffset[0];
+          	editingObj.top = e.pageY + scrollOffset[1] + layerOffset[1];
+            break;
+          case "layerResize":
+          	dragLayer.css({
+              width: (layerResizeSize[0]+(e.pageX - layerResizePosition[0])) + "px",
+              height: (layerResizeSize[1]+(e.pageY - layerResizePosition[1])) + "px",
+            });
+            //修改publishObj
+          	//必然是修改publishObj[activeIndex].layer最后一个
+          	var editingObj = publishObj[activeIndex].layer[publishObj[activeIndex].layer.length-1];
+          	editingObj.width = layerResizeSize[0]+(e.pageX - layerResizePosition[0]);
+          	editingObj.height = layerResizeSize[1]+(e.pageY - layerResizePosition[1]);
+          	break;
+          case "layoutMove":
+          	containerDrag.css({
+          		"left": (e.pageX + scrollOffset[0] - containerOffset[0])+"px",
+          		"top": (e.pageY + scrollOffset[1]- containerOffset[1])+"px",
+          		"color":"#fff"
+          	});
+          	if(Math.abs(containerGhost.position().left-containerDrag.position().left)>50 || Math.abs(containerGhost.position().top-containerDrag.position().top)>50){
+          		containerGhost.css({
+          			"left":Math.round((e.pageX + scrollOffset[0]-containerOffset[0])/100)*100+"px",
+          			"top":Math.round((e.pageY + scrollOffset[1]-containerOffset[1])/100)*100+"px"
+          		});
+          	}
+          	break;
+          case "layoutResize":
+          	containerDrag.css({
+          		"width":(containerResizeSize[0]+(e.pageX+scrollOffset[0]-containerResizePosition[0]))+"px",
+          		"height":(containerResizeSize[1]+(e.pageY+scrollOffset[1]-containerResizePosition[1]))+"px",
+          	});
+          	if(Math.abs(containerDrag.width() - containerGhost.width())>50 || Math.abs(containerDrag.height() - containerGhost.height())>50){
+          		containerGhost.css({
+          			"width":Math.round(containerDrag.width()/100)*100+"px",
+          			"height":Math.round(containerDrag.height()/100)*100+"px"
+          		});
+          	}
+          	break;
+          case "layout":
+          	if(!positionNumXE || !positionNumYE){ //第一次
+          		positionNumXE = Math.floor((e.pageX+scrollOffset[0])/100);
+	        		positionNumYE = Math.floor((e.pageY+scrollOffset[1])/100);
+	        		if(positionNumXS != positionNumXE || positionNumYS != positionNumYE){
+		        		var layoutDiv = $("#tabContent").find(".active").find(".layoutDiv").eq(0);
+		        		layoutDiv.css({
+		        			"width":(Math.abs(positionNumXE-positionNumXS)+1)*100+'px',
+		        			"height":(Math.abs(positionNumYE-positionNumYS)+1)*100+'px'
+		        		});
+		        		if(positionNumXE<positionNumXS){	//往左边拖拽
+		        			layoutDiv.css({
+		        				"left":positionNumXE*100+"px"
+		        			});
+		        		}
+		        		if(positionNumYE<positionNumYS){
+		        			layoutDiv.css({
+		        				"top":positionNumYE*100+"px"
+		        			});
+		        		}
+		        	}
+          	}else{
+          		var x = Math.floor((e.pageX+scrollOffset[0])/100);
+          		var y = Math.floor((e.pageY+scrollOffset[1])/100);
+          		if(x != positionNumXE || y != positionNumYE){
+          			var layoutDiv = $("#tabContent").find(".active").find(".layoutDiv").eq(0);
+		        		layoutDiv.css({
+		        			"width":(Math.abs(x-positionNumXS)+1)*100+'px',
+		        			"height":(Math.abs(y-positionNumYS)+1)*100+'px'
+		        		});
+          		}
+          		if(x<positionNumXS){	//往左边拖拽
+	        			layoutDiv.css({
+	        				"left":x*100+"px"
+	        			});
+	        		}
+	        		if(y<positionNumYS){
+	        			layoutDiv.css({
+	        				"top":y*100+"px"
+	        			});
+	        		}
+          	}
+          	break;
+          default:
+            break;
+        }
+      });
+
+      //添加拖拽结束事件
+      $(document).mouseup(function(e) {
+        //解除事件绑定
+        //因为layer也要用到mousemove和mouseup的事件，所以不能删除事件
+        switch(draging) {
+          case "app":
+            $(".container-move").unbind("mouseenter");
+            $(".container-move").unbind("mouseleave");
+            $(".layer-win-move").unbind("mouseenter");
+            $(".layer-win-move").unbind("mouseleave");
+            if(acceptItem) {
+              acceptItem.removeClass("drag-accept");
+              //在发布对象中添加应用属性
+              var id = acceptItem.parent().attr("id");
+              var list = acceptItem.hasClass("container-move")?publishObj[activeIndex].container:publishObj[activeIndex].layer;
+              for(var i=0;i<list.length;i++){
+              	if(list[i].id == id){
+              		//添加应用
+	              	var app = storeApp[dragIndex];
+	              	var now = (new Date()).getTime();
+	              	if(list[i].url==undefined || list[i].url.length==0){		//当前容器内没有url
+	              		acceptItem.next().attr("src",app.url);
+	              		acceptItem.next().attr("id",now);
+	              		list[i].url = [app.url];
+	              		list[i].frameId = [now];
+	              		list[i].pageName = [app.pageName];
+	              		list[i].appType = [app.oappid];
+	              		list[i].appId = [app.pageid];
+										dragIndex = -1;
+										acceptItem = null;
+	              	}else{
+										layer.confirm('该容器内有控件，请选择操作', {
+											btn: ['替换','添加'],
+											cancel:function(){
+												dragIndex = -1;
+												acceptItem = null;
+											}
+										}, function(index){
+											acceptItem.next().attr("src",app.url);
+											acceptItem.next().attr("id",now);
+											list[i].url = [app.url];
+											list[i].frameId = [now];
+											list[i].pageName = [app.pageName];
+											list[i].appType = [app.oappid];
+											list[i].appId = [app.pageid];
+											
+											dragIndex = -1;
+											acceptItem = null;
+											layer.close(index);
+										}, function(index){
+											var frames = acceptItem.parent().find("iframe");
+											acceptItem.parent().find(".active-frame").removeClass("active-frame");
+											frames.last().after('<iframe id="'+now+'" frameborder="0" src="'+app.url+'" class="active-frame"></iframe>');
+											list[i].url.push(app.url);
+											list[i].frameId.push(now);
+											list[i].pageName.push(app.pageName);
+											list[i].appType.push(app.oappid);
+											list[i].appId.push(app.pageid);
+											if(frames.length == 1){	//启动循环
+												mySetInterval(list[i].id);
+											}
+											dragIndex = -1;
+											acceptItem = null;
+											layer.close(index);
+										});
+	              	}
+	              	break;
+              	}
+              }
+            }
+            drag.hide();
+            break;
+          case "wyy":
+            $(".container-move").unbind("mouseenter");
+            $(".container-move").unbind("mouseleave");
+            $(".layer-win-move").unbind("mouseenter");
+            $(".layer-win-move").unbind("mouseleave");
+            if(acceptItem) {
+              acceptItem.removeClass("drag-accept");
+              var id = acceptItem.parent().attr("id");
+		          var list = acceptItem.hasClass("container-move")?publishObj[activeIndex].container:publishObj[activeIndex].layer;
+	            var urlLoading = "${pageContext.request.contextPath}/modelFrame-tab/loading.html";
+	            var frames = acceptItem.parent().find("iframe");
+	            var app = storeWyy[dragIndex];
+							var activeFrame = acceptItem.parent().find(".active-frame").eq(0);
+							var activeFrameId = activeFrame.attr("id");
+	            //在发布对象中添加应用属性及设置iframe
+	            for(var i=0;i<list.length;i++){
+	            	if(list[i].id == id){
+	              	if(list[i].url==undefined || list[i].url.length==0){		//当前容器内没有url
+	              		//acceptItem.next().attr("src",urlLoading);
+	              		list[i].pageName = [app.widgetName];
+	              		list[i].appType = ["widget"];
+	              		list[i].appId = [app.widgetId];
+	              		//ajax获取url，并设置到iframe中
+             	 			setUrlByWidgetId(app,frames.last(),list[i],0);
+										dragIndex = -1;
+										acceptItem = null;
+	              	}else{	//当前容器内已经有url，需要额外添加
+										layer.confirm('该容器内有控件，请选择操作', {
+											btn: ['替换','添加'],
+											cancel:function(){
+												dragIndex = -1;
+												acceptItem = null;
+											}
+										}, function(index){
+											if($("#"+activeFrameId+"_tools").length>0){
+												$("#"+activeFrameId+"_tools").remove();
+											}
+											for(var k=0;k<list[i].frameId.length;k++){
+												if(list[i].frameId[k] == activeFrameId){
+													for(var m in list[i]){
+														switch(m){
+															case "pageName":
+																list[i][m][k] = app.widgetName;
+																break;
+															case "appType":
+																list[i][m][k] = "widget";
+																break;
+															case "appId":
+																list[i][m][k] = app.widgetId;
+																break;
+															case "width":
+																break;
+															case "height":
+																break;
+															case "left":
+																break;
+															case "top":
+																break;
+															case "frameId":
+																break;
+															case "url":
+																break;
+															default:
+																list[i][m][k] = null;
+																break;
+														}
+													}
+													//ajax获取url，并设置到iframe中
+													setUrlByWidgetId(app,activeFrame,list[i],0,k);
+													break;
+												}
+											}
+											dragIndex = -1;
+											acceptItem = null;
+											layer.close(index);
+										}, function(index){
+											frames.last().after('<iframe frameborder="0" src="" class="active-frame"></iframe>');
+											list[i].pageName.push(app.widgetName);
+											list[i].appType.push("widget");
+											list[i].appId.push(app.widgetId);
+											//ajax获取url，并设置到iframe中
+											var frameLast = acceptItem.parent().find("iframe").last();
+											setUrlByWidgetId(app,frameLast,list[i],1);
+											if(frames.length == 1){	//启动循环
+												mySetInterval(list[i].id);
+											}
+											dragIndex = -1;
+											acceptItem = null;
+											layer.close(index);
+										});
+	              	}
+	              	break;
+	            	}
+            	}
+            }
+            drag.hide();
+            break;
+          case "tabDragStart": //还在tab拖拽准备阶段，什么都不做
+            var newIndex = $("#tabGhost").index();
+            if(newIndex == toDragIndex) { //没有改变顺序
+              draging = "";
+              return;
+            }
+            if(newIndex > toDragIndex) { //前面的往后拖，实际的index比ghost的index少1，因为前面一个没了
+              newIndex--;
+            }
+            //待排序的肯定是activeIndex，因为拖动tab会触发tab的click事件
+            $("#tabGhost").hide();
+            $("#tabGhost").after(toDragTab);
+            $("#tabGhost").remove();
+            toDragTab.css({
+              "width": "auto",
+              "height": "auto",
+              "position": "relative",
+              "zIndex": "auto",
+              "left": "auto",
+              "top": "auto"
+            });
+            //先移除老的tab
+            var sortTabObj = publishObj[toDragIndex];
+            publishObj.splice(toDragIndex, 1);
+            publishObj.splice(newIndex, 0, sortTabObj);
+            toDragTab = null;
+            activeIndex = activeTab.index();
+            //ie需要清除掉setCapture
+            try {
+              document.getElementById("cover").releaseCapture();
+            } catch(e) {}
+            break;
+          case "layerMove":
+            dragLayer = null;
+            layerOffset = [];
+            break;
+          case "layoutMove":
+          	//注意，这里的containerDrag和containerGhost的z-index都大于0，所以要加上偏移
+          	containerDrag.css({
+          		"left":(containerGhost.position().left+scrollOffset[0])+"px",
+          		"top":(containerGhost.position().top+scrollOffset[1])+"px"
+          	});
+          	containerGhost.remove();
+          	//修改publishObj
+          	//必然是修改publishObj[activeIndex].container最后一个
+          	var editingDom = publishObj[activeIndex].container[publishObj[activeIndex].container.length-1];
+          	editingDom.left = containerDrag.position().left+scrollOffset[0];
+          	editingDom.top = containerDrag.position().top+scrollOffset[1];
+          	break;
+          case "layoutResize":
+          	containerDrag.css({
+          		"width":containerGhost.width()+"px",
+          		"height":containerGhost.height()+"px"
+          	});
+          	containerGhost.remove();
+          	//修改publishObj
+          	//必然是修改publishObj[activeIndex].container最后一个
+          	var editingDom = publishObj[activeIndex].container[publishObj[activeIndex].container.length-1];
+          	editingDom.width = containerDrag.width();
+          	editingDom.height = containerDrag.height();
+          	break;
+          case "layout":	//布局,在mousemove的时候就已经完成操作了
+          	break;
+          default:
+            break;
+        }
+        draging = "";
+      });
+    });
+
+    //根据历史模板信息或者开始读入的配置信息创建布局
+    function createAppAll(list) {
+   		var active = "";
+      for(var i=0;i<list.length;i++){
+      	if(i==0){
+          tabPaneSize = list[0].size;
+					if(list[0].offset){
+						$("#tabContent").css({
+							marginLeft:list[0].offset[0]+'px',
+							marginTop:list[0].offset[1]+'px'
+						});
+					}
+          active = "active";
+      	}
+      	//创建tab及画布
+	      var title = '<li role="presentation" class="'+active+'">' +
+	        '	<a href="#tab' + list[i].id + '" role="tab" data-toggle="tab">' + list[i].pageName + '<span class="glyphicon glyphicon-remove"></span></a>' +
+	        '</li>';
+	      var content = '<div role="tabpanel" class="tab-pane '+active+'" id="tab' + list[i].id + '" style="width:'+tabPaneSize[0]+'px; height:'+tabPaneSize[1]+'px;"></div>';
+	      //判断是否需要让之active的先失去焦点
+	      $("#tabTitle").append(title);
+	      $("#tabContent").append(content);
+      	//创建container
+      	var innerStr = "";
+      	var needInterval = [];
+      	for(var j=0;j<list[i].container.length;j++){
+      		var urlList = list[i].container[j].url?list[i].container[j].url:[];
+      		var iframes = "";
+      		for(var l=0;l<urlList.length;l++){
+						var extraParam = urlList[l].indexOf("PAC-M") != -1?'?source=pac&userName='+userName+'#'+list[i].container[j].frameId[l]:"";
+      			if(l==0){
+      				iframes += '<iframe frameborder="0" id="'+list[i].container[j].frameId[l]+'" src="'+urlList[l]+extraParam+'" class="active-frame"></iframe>';
+      			}else{
+      				iframes += '<iframe frameborder="0" id="'+list[i].container[j].frameId[l]+'" src="'+urlList[l]+extraParam+'"></iframe>';
+      			}
+      		}
+      		//可能存在光创建容器，但是没有拖应用进去的情况
+      		if(iframes==""){
+      			iframes = '<iframe frameborder="0" class="active-frame"></iframe>';
+      		}
+      		innerStr += '<div class="my-container" style="width: '+list[i].container[j].width+'px; height: '+list[i].container[j].height+'px; left: '+list[i].container[j].left+'px; top: '+list[i].container[j].top+'px; z-index: '+j+';" id="'+list[i].container[j].id+'">'+
+      									'<div class="container-move" style="display:none;"></div>'+
+      									iframes+
+      									'<div class="container-resize resize-b-r"></div>'+
+      								'</div>';
+      		if(urlList.length>1){
+      			needInterval.push(list[i].container[j].id);
+      		}
+      	}
+      	for(var k=0;k<list[i].layer.length;k++){
+      		var urlList =  list[i].layer[k].url;
+      		var iframes = "";
+      		for(var l=0;l<urlList.length;l++){
+						var extraParam = urlList[l].indexOf("PAC-M") != -1?'?source=pac&userName='+userName+'#'+list[i].container[j].frameId[l]:"";
+      			if(l==0){
+      				iframes += '<iframe frameborder="0" id="'+list[i].layer[k].frameId[l]+'" src="'+urlList[l]+extraParam+'" class="active-frame"></iframe>';
+      			}else{
+      				iframes += '<iframe frameborder="0" id="'+list[i].layer[k].frameId[l]+'" src="'+urlList[l]+extraParam+'"></iframe>';
+      			}
+      		}
+      		//可能存在光创建容器，但是没有拖应用进去的情况
+      		if(iframes==""){
+      			iframes = '<iframe frameborder="0" class="active-frame"></iframe>';
+      		}
+      		var borderRadius = list[i].layer[k].type == "circle"?"border-radius:50%;":"";
+    			var cls = list[i].layer[k].type == "circle"?"resize-b-r-circle":"resize-b-r";
+      		innerStr += '<div class="layer-win" id="'+list[i].layer[k].id+'" style="'+borderRadius+' left: '+list[i].layer[k].left+'px; top: '+list[i].layer[k].top+'px; width: '+list[i].layer[k].width+'px; height: '+list[i].layer[k].height+'px; margin: 0px;">'+
+      									'<div class="layer-win-move" style="display:none;"></div>'+
+      									iframes+
+      									'<div class="layer-win-resize '+cls+'"></div>'+
+    									'</div>';
+    			if(urlList.length>1){
+      			needInterval.push(list[i].layer[k].id);
+      		}
+      	}
+      	$("#tab"+list[i].id).html(innerStr);
+      	for(var m = 0;m<needInterval.length;m++){
+      		mySetInterval(needInterval[m]);
+      	}
+      }
+      activeTab = $("#tabTitle").find(".active");
+      activeIndex = 0;
+      activeTabId = activeTab.find("a").attr("href").substring(3,activeTab.find("a").attr("href").length-3);
+      reIndex("container");
+      reIndex("layer");
+    }
+
+    //用于判断新增tab或删除tab是否会影响tabRightWidth和tabLeftWidth及响应的btnRightTab按钮、btnLeftTab按钮
+    //参数：li表示增加或删除的tabTitle的jquery dom，flag表示增加或删除，1为增加，-1为删除
+    function setDisabled(li, flag) {
+      titleWidth += flag * li.width()
+      var ul = $("#tabTitle");
+      var titleList = $("#tabTitle").find("li");
+      var marginL = ul.css("marginLeft") ? parseInt(ul.css("marginLeft")) : 0;
+      var containerW = $("#tabTitleContainer").width();
+      if(containerW >= titleWidth) {
+        tabLeftWidth = 0;
+        tabRightWidth = 0;
+        $("#btnRightTab").addClass("disabled");
+        $("#btnLeftTab").addClass("disabled");
+        ul.css({
+          "marginLeft": 0
+        });
+      } else {
+        if(flag == 1) { //是增加，必定定位到最后一个
+          tabLeftWidth = titleWidth - containerW;
+          tabRightWidth = 0;
+          $("#btnRightTab").addClass("disabled");
+          $("#btnLeftTab").removeClass("disabled");
+          ul.css({
+            "marginLeft": "-" + tabLeftWidth + "px"
+          });
+        } else { //是删除，优先消除右侧
+          if(li.width() < tabRightWidth) { //右侧足够消除,啥都不做
+            tabRightWidth -= li.width();
+          } else if(li.width() == tabRightWidth) { //右侧足够消除,但需要设置disabled
+            tabRightWidth -= li.width();
+            $("#btnRightTab").addClass("disabled");
+          } else { //右侧不够消除了，需要利用左侧的宽度了
+            tabRightWidth = 0;
+            tabLeftWidth = titleWidth - containerW;
+            $("#btnRightTab").addClass("disabled");
+            ul.css({
+              "marginLeft": "-" + tabLeftWidth + "px"
+            });
+          }
+        }
+      }
+    }
+
+    //添加应用列表到左侧菜单
+    function addApp(appList) {
+      var innerStr = "";
+      for(var i = 0; i < appList.length; i++) {
+        innerStr += '<li>' + appList[i].pageName + '</li>';
+      }
+      $("#appList").append(innerStr);
+      //防止万恶的老IE选择文本
+      try {
+        document.onselectstart = function() {
+          return false;
+        };
+      } catch(e) {}
+      //添加拖拽开始点击事件
+      $("#appList").find("li").on("mousedown", function(e) {
+        e.preventDefault();
+        //如果没有创建tab则不允许拖拽
+        if($("#tabTitle").find(".active").length == 0) {
+          myAlert("请先创建页面！");
+          return;
+        }
+        if($("#tabContent").find(".active").eq(0).find(".container-move").length == 0 && $("#tabContent").find(".active").eq(0).find(".layer-win").length == 0) {
+          myAlert("请先选择模板或创建容器！");
+          return;
+        }
+        drag.css({
+          "left": (e.pageX + scrollOffset[0] - 50) + "px",
+          "top": (e.pageY + scrollOffset[1] - 20) + "px"
+        });
+        if(IETester() == "11.0" || !IETester()) {
+          drag.show();
+        }
+        dragIndex = $(this).index();
+        draging = "app";
+        //mousemove和mouseup的事件现在是全局的了
+        //这里使用全局的是因为容器 不光是tab里的，可能是layer创建的win
+        $(".container-move").on("mouseenter", function(e) {
+          acceptItem = $(this);
+          $(this).addClass("drag-accept");
+        });
+        $(".container-move").on("mouseleave", function() {
+          $(".drag-accept").eq(0).removeClass("drag-accept");
+          acceptItem = null;
+        });
+        $(".layer-win-move").on("mouseenter", function(e) {
+          acceptItem = $(this);
+          $(this).addClass("drag-accept");
+        });
+        $(".layer-win-move").on("mouseleave", function() {
+          $(".drag-accept").eq(0).removeClass("drag-accept");
+          acceptItem = null;
+        });
+        return false;
+      });
+    }
+
+    //添加微应用列表到左侧菜单
+    function addWyy(appList) {
+      var innerStr = "";
+      for(var i = 0; i < appList.length; i++) {
+        innerStr += "<li>" + appList[i].widgetName + "</li>"
+      }
+      $("#wyyList").append(innerStr);
+      //防止万恶的老IE选择文本
+      try {
+        document.onselectstart = function() {
+          return false;
+        };
+      } catch(e) {}
+      //添加拖拽开始点击事件
+      $("#wyyList").find("li").on("mousedown", function(e) {
+        e.preventDefault();
+        //如果没有创建tab则不允许拖拽
+        if($("#tabTitle").find(".active").length == 0) {
+          myAlert("请先创建页面！")
+          return;
+        }
+        if($("#tabContent").find(".active").eq(0).find(".container-move").length == 0 && $("#tabContent").find(".active").eq(0).find(".layer-win").length == 0) {
+          myAlert("请先选择模板或创建容器！");
+          return;
+        }
+        drag.css({
+          "left": (e.pageX - 50) + "px",
+          "top": (e.pageY - 20) + "px"
+        });
+        if(IETester() == "11.0" || !IETester()) {
+          drag.show();
+        }
+        dragIndex = $(this).index();
+        draging = "wyy";
+        //mousemove和mouseup的事件现在是全局的了
+        //这里使用全局的是因为容器 不光是tab里的，可能是layer创建的win
+        $(".container-move").on("mouseenter", function(e) {
+          acceptItem = $(this);
+          $(this).addClass("drag-accept");
+        });
+        $(".container-move").on("mouseleave", function() {
+          $(".drag-accept").eq(0).removeClass("drag-accept");
+          acceptItem = null;
+        });
+        $(".layer-win-move").on("mouseenter", function(e) {
+          acceptItem = $(this);
+          $(this).addClass("drag-accept");
+        });
+        $(".layer-win-move").on("mouseleave", function() {
+          $(".drag-accept").eq(0).removeClass("drag-accept");
+          acceptItem = null;
+        });
+        return false;
+      });
+    }
+
+    //创建tab并初始化选择模板
+    function addTab(tabTitle,id) {
+    	var idAdd = id?id:(new Date).getTime();
+      if(tabPaneSize.length == 0){
+      	tabPaneSize = [$("#tabContent").width(),$("#tabContent").height()];
+    	}
+      var title = '<li role="presentation" class="active">' +
+        '	<a href="#tab' + idAdd + '" role="tab" data-toggle="tab">' + tabTitle + '<span class="glyphicon glyphicon-remove"></span></a>' +
+        '</li>';
+      var content = '<div role="tabpanel" class="tab-pane active" id="tab' + idAdd + '" style="width:'+tabPaneSize[0]+'px; height:'+tabPaneSize[1]+'px;"></div>';
+      //判断是否需要让之active的先失去焦点
+      if($("#tabTitle").children().length > 0) {
+        $("#tabTitle").find(".active").removeClass("active");
+        $("#tabContent").find(".active").removeClass("active");
+      }
+      $("#tabTitle").append(title);
+      $("#tabContent").append(content);
+      activeTab = $("#tabTitle").find(".active").eq(0);
+      activeTabId = parseInt(activeTab.children().eq(0).attr("href").replace(/#tab/g, ""));
+      //因为多了个按钮，所以要-1
+      activeIndex = activeTab.index()-1;
+      //添加tab至发布对象
+      publishObj.push({
+        "pageName": tabTitle,
+        "id": idAdd,
+        "container": [],
+        "layer": [],
+        "size":tabPaneSize
+      });
+      //设置左右按钮及tabLeftWidth和tabRightWidth
+      setDisabled(activeTab, 1);
+    }
+
+    function createLayer(type) {
+    	var borderRadius = type == "circle"?"border-radius:50%;":"";
+    	var cls = type == "circle"?"resize-b-r-circle":"resize-b-r";
+    	var innerStr = '<div class="layer-win" id="'+(new Date()).getTime()+'" style="left:50%; top:50%; width:100px; height:100px; '+borderRadius+'">'+
+    								  	'<div class="layer-win-move"></div>'+
+    								  	'<iframe frameborder="0" class="active-frame"></iframe>'+
+    								  	'<div class="layer-win-resize '+cls+'"></div>'+
+    								  '</div>'
+      $("#tabContent").find(".active").eq(0).append(innerStr);
+      var newLayer = $("#tabContent").find(".active").find(".layer-win").last();
+    	publishObj[activeIndex].layer.push({
+    		id:newLayer.attr("id"),
+    		width:100,
+    		height:100,
+    		type:type,
+    		left:newLayer.position().left + scrollOffset[0],
+    		top:newLayer.position().top + scrollOffset[1]
+    	});
+    }
+
+    //用于因关闭激活tab切换至后其他tab
+    //直接用click可能导致activeIndex不对
+    function setActive(jqDom) {
+      jqDom.tab('show');
+      activeTab = $("#tabTitle").find(".active").eq(0);
+      activeTabId = parseInt(activeTab.children().eq(0).attr("href").replace(/#tab/g, ""));
+      activeIndex = activeTab.index()-1;
+    }
+
+    //自定义的alert，因为这里的layer都置顶了，普通的alert会被覆盖
+    function myAlert(title) {
+      var area = title.replace(/[\u4e00-\u9fa5]/g, "aa").length > 57 ? ['400px'] : ['260px'];
+      layer.open({
+        type: 1,
+        title: '提示',
+        area: area,
+        shade: 0.3,
+        zIndex: layer.zIndex, //用于选中置顶
+        content: '<div style="padding: 20px; line-height: 20px;">' + title + '</div>',
+        btn: ['确定'],
+        btn1: function(index, layero) {
+          layer.close(index);
+        },
+        success: function(layero, index) {
+          layer.setTop(layero); //用于选中置顶
+        }
+      });
+    }
+
+    //自定义的prompt，因为这里的layer都置顶了，普通的alert会被覆盖
+    function myPrompt(title, btn1, fn) {
+      layer.open({
+        type: 1,
+        title: title,
+        area: ['262px', '154px'],
+        shade: 0.3,
+        zIndex: layer.zIndex, //用于选中置顶
+        content: '<input type="text" id="inpTitle" class="inp-title" />',
+        btn: [btn1, '取消'],
+        btn1: function(index, layero) {
+          fn(index);
+        },
+        btn2: function(index, layero) {
+          layer.close(index);
+        },
+        success: function(layero, index) {
+          layer.setTop(layero); //用于选中置顶
+        }
+      });
+    }
+
+    function publishAjax(rate) {
+      var data = {
+        appId: appIdPublish,
+        file: encodeURI(JSON.stringify(publishObj)),
+        rate: JSON.stringify(rate)
+      };
+      $.ajax({
+        async: false,
+        cache: false,
+        contentType: "application/json",
+        type: 'post',
+        dataType: "json",
+        data: JSON.stringify(data),
+        url: "${pageContext.request.contextPath}/manager/menuAction/publish",
+        error: function() {
+          myAlert('请求失败');
+        },
+        success: function(res) { //请求成功后处理函数。
+          result = res.result;
+          if(res.result == "success") {
+            myAlert("保存成功！");
+          } else {
+            myAlert(res.reason);
+          }
+        }
+      });
+    }
+    
+    //获得app的使用频率
+    function getAppRate() {
+      var rateObj = {};
+      for (var i = 0; i < publishObj.length; i++) {
+        var layers = publishObj[i].layer;
+        var containers = publishObj[i].container;
+        for (var j = 0; j < layers.length; j++) {
+          //没有层级关系，所以可以直接用
+          if(layers[j].url){
+          	var urlList = layers[j].url;
+          	if(urlList.length>1){
+          		var appTypeList = layers[j].appType;
+          		var appIdList = layers[j].appId;
+          		for(var k = 0;k<appTypeList.length;k++){
+          			addRate(rateObj,appTypeList[k],appIdList[k]);
+          		}
+          	}else{
+          		addRate(rateObj,layers[j].appType,layers[j].appId);
+          	}
+          }
+        }
+        for (var l = 0; l < containers.length; l++) {
+          //没有层级关系，所以可以直接用
+          if(containers[l].url){
+          	var urlList = containers[l].url;
+          	if(urlList.length>1){
+          		var appTypeList = containers[l].appType;
+          		var appIdList = containers[l].appId;
+          		for(var m = 0;m<appTypeList.length;m++){
+          			addRate(rateObj,appTypeList[m],appIdList[m]);
+          		}
+          	}else{
+          		addRate(rateObj,containers[l].appType,containers[l].appId);
+          	}
+          }
+        }
+      }
+      var returnArr = [];
+      for (var i in rateObj) {
+        returnArr.push(rateObj[i]);
+      }
+      return returnArr;
+    }
+    
+    //写入使用频率
+    function addRate(rateObj,appType,appId){
+    	if (!rateObj[appType + "_" + appId]) {
+        rateObj[appType + "_" + appId] = {
+          appType: appType,
+          appId: appId,
+          num: 1
+        };
+      } else {
+        rateObj[appType + "_" + appId].num++;
+      }
+    }
+    
+
+    //封装的ajax操作
+    function myAjax(config) {
+      var baseConfig = {
+        dataType: "json",
+        //type: "POST"
+        cache: false
+      }
+      $.extend(config, baseConfig);
+      $.ajax(config);
+    }
+
+    //判断ie版本
+    function IETester(userAgent) {
+      var UA = userAgent || navigator.userAgent;
+      if(/msie/i.test(UA)) {
+        return UA.match(/msie (\d+\.\d+)/i)[1];
+      } else if(~UA.toLowerCase().indexOf('trident') && ~UA.indexOf('rv')) {
+        return UA.match(/rv:(\d+\.\d+)/)[1];
+      }
+      return false;
+    }
+    
+    //获取微应用的地址并填写相关信息
+    function setUrlByWidgetId(app,frame,obj,type,index) {
+      $.ajax({
+        data: {
+          widgetId: app.widgetId
+        },
+        url: '${pageContext.request.contextPath}/manager/widget/downloadWidget',
+        cache: false,
+        success: function(result) {
+          if(result.success) {
+            var url = "${pageContext.request.contextPath}/widgetFrame/app/" + result.data;
+            var now = (new Date()).getTime();
+            //在发布对象中添加应用属性及设置iframe
+            frame.attr("src",url+'?source=pac&userName='+userName+'_='+now+'#'+now);
+            frame.attr("id",now);
+            if(type == 0){
+            	obj.url = [url];
+            	obj.frameId = [now];
+            }else if(type==1){
+            	obj.url.push(url);
+            	obj.frameId.push(now);
+            }else{
+							obj.url[index] = url;
+            	obj.frameId[index] = now;
+						}
+          } else {
+          	var url = "${pageContext.request.contextPath}/modelFrame-tab/error.html";
+            //在发布对象中添加应用属性及设置iframe
+            frame.attr("src",url+'?source=pac&userName='+userName+'_='+now+'#'+now);
+            frame.attr("id",now);
+            if(type == 0){
+            	obj.url = [url];
+            	obj.frameId = [now];
+            }else{
+            	obj.url.push(url);
+            	obj.frameId.push(now);
+            }
+          }
+        },
+        error: function() {
+          var url = "${pageContext.request.contextPath}/modelFrame-tab/error.html";
+          var now = (new Date()).getTime();
+          //在发布对象中添加应用属性及设置iframe
+          frame.attr("src",url);
+          frame.attr("id",now);
+         	if(type == 0){
+          	obj.url = [url];
+          	obj.frameId = [now];
+          }else{
+          	obj.url.push(url);
+          	obj.frameId.push(now);
+          }
+        }
+      });
+    }
+
+    function showImg(str) {
+      var list = str.split(",");
+      var json = {
+        "status": 1,
+        "msg": "",
+        "title": "JSON请求的相册",
+        "id": 8,
+        "start": 0,
+        "data": []
+      };
+      for(var i = 0; i < list.length; i++) {
+        json.data.push({
+          "pid": i,
+          "src": list[i],
+          "thumb": ""
+        });
+      }
+      layer.photos({
+        photos: json, //格式见API文档手册页
+        anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机
+      });
+    }
+    
+    function requestFullScreen(element) {
+	    // 判断各种浏览器，找到正确的方法
+	    //因为在别人页面引用，所以不必要了
+			
+			// var requestMethod = element.requestFullScreen || //W3C
+	    // element.webkitRequestFullScreen ||    //Chrome等
+	    // element.mozRequestFullScreen || //FireFox
+	    // element.msRequestFullScreen; //IE11
+	    // if (requestMethod) {
+        // requestMethod.call(element);
+	    // }
+	    // else if (typeof window.ActiveXObject !== "undefined") {//for Internet Explorer
+        // var wscript = new ActiveXObject("WScript.Shell");
+        // if (wscript !== null) {
+          // wscript.SendKeys("{F11}");
+        // }
+	    // }
+		}
+    
+    //退出全屏 判断浏览器种类
+		function exitFull() {
+	    // 判断各种浏览器，找到正确的方法
+			//因为在别人页面引用，所以不必要了
+			
+	    // var exitMethod = document.exitFullscreen || //W3C
+	    // document.mozCancelFullScreen ||    //Chrome等
+	    // document.webkitExitFullscreen || //FireFox
+	    // document.webkitExitFullscreen; //IE11
+	    // if (exitMethod) {
+        // exitMethod.call(document);
+	    // }
+	    // else if (typeof window.ActiveXObject !== "undefined") {//for Internet Explorer
+        // var wscript = new ActiveXObject("WScript.Shell");
+        // if (wscript !== null) {
+          // wscript.SendKeys("{F11}");
+        // }
+	    // }
+		}
+		
+		//将目标id置于数组最后，用于鼠标点击修改容器index顺序
+		function reOrder(id,type){
+			var temp;
+			var list = type=="container"?publishObj[activeIndex].container:publishObj[activeIndex].layer;
+			for(var i=0;i<list.length;i++){
+				if(list[i].id == id){
+					temp = list[i];
+					list.splice(i,1);
+					break;
+				}
+			}
+			list.push(temp);
+		}
+		
+		//根据containerIndexList里的id顺序重新对容器进行排序
+		function reIndex(type){
+			//这里需要重新设置容器和层的z-index
+			if(type == "container"){
+				for(var i=0;i<publishObj[activeIndex].container.length;i++){
+					$("#"+publishObj[activeIndex].container[i].id).css({
+						"zIndex": i+1
+					});
+				}
+			}else{
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					$("#"+publishObj[activeIndex].layer[i].id).css({
+						"zIndex": i+1001
+					});
+				}
+			}
+		}
+		
+		//获取容器的相关位置和大小信息
+		function getPoistionInfo(jqObj){
+			var json = {};
+			json.x = jqObj.offset().left + scrollOffset[0];
+			json.y = jqObj.offset().top + scrollOffset[1];
+			json.w = jqObj.width();
+			json.h = jqObj.height();
+			return json;
+		}
+		
+		//开始循环
+		function mySetInterval(id){
+			setInterval(function(){
+				var frames = $("#"+id).find("iframe");
+				var activeFrame = $("#"+id).find(".active-frame").eq(0);
+				var index;
+				for(var i=0;i<frames.length;i++){
+					if(frames.eq(i).attr("id") == activeFrame.attr("id")){
+						index = i;
+						break;
+					}	
+				}
+				if(index == frames.length-1){	//是最后一个
+					activeFrame.removeClass("active-frame");
+					if($("#"+activeFrame.attr("id")+"_tools").length>0){
+						$("#"+activeFrame.attr("id")+"_tools").hide();
+					}
+					frames.eq(0).addClass("active-frame");
+					if($("#"+frames.eq(0).attr("id")+"_tools").length>0){
+						$("#"+frames.eq(0).attr("id")+"_tools").show();
+					}
+				}else{
+					activeFrame.removeClass("active-frame");
+					if($("#"+activeFrame.attr("id")+"_tools").length>0){
+						$("#"+activeFrame.attr("id")+"_tools").hide();
+					}
+					activeFrame.next().addClass("active-frame");
+					if($("#"+activeFrame.next().attr("id")+"_tools").length>0){
+						$("#"+activeFrame.next().attr("id")+"_tools").show();
+					}
+				}
+				index = null;
+				frames = null;
+				activeFrame = null;
+			},5000)
+		}
+		
+		function getChartColor(id,color){
+			var returnColor = color;
+			var containerId = $("#"+id).parent().attr("id");
+			var index = $("#"+id).index()-1;
+			var frames = $("#"+id).parent().find("iframe")
+			var flag = false;
+			for(var i=0;i<publishObj[activeIndex].container.length;i++){
+				if(publishObj[activeIndex].container[i].id == containerId){
+					if(publishObj[activeIndex].container[i].color){
+						if(publishObj[activeIndex].container[i].color[index]){
+							returnColor = publishObj[activeIndex].container[i].color[index]
+						}else{
+							publishObj[activeIndex].container[i].color[index] = color;
+						}						
+					}else{
+						publishObj[activeIndex].container[i].color = [];
+						publishObj[activeIndex].container[i].color[index] = color;
+					}
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					if(publishObj[activeIndex].layer[i].id == containerId){
+						if(publishObj[activeIndex].layer[i].color){
+							if(publishObj[activeIndex].layer[i].color[index]){
+								returnColor = publishObj[activeIndex].layer[i].color[index]
+							}else{
+								publishObj[activeIndex].layer[i].color[index] = color;
+							}
+						}else{
+							publishObj[activeIndex].layer[i].color = [];
+							publishObj[activeIndex].layer[i].color[index] = color;
+						}
+						flag = true;
+						break;
+					}
+				}
+			}
+			return returnColor;
+		}
+		
+		function getChartType(id,chartType){
+			var chartType = 0;
+			var containerId = $("#"+id).parent().attr("id");
+			var index = $("#"+id).index()-1;
+			var flag = false;
+			for(var i=0;i<publishObj[activeIndex].container.length;i++){
+				if(publishObj[activeIndex].container[i].id == containerId){
+					if(publishObj[activeIndex].container[i].chartType){
+						if(publishObj[activeIndex].container[i].chartType[index]){
+							chartType = publishObj[activeIndex].container[i].chartType[index]
+						}else{
+							publishObj[activeIndex].container[i].chartType[index] = chartType;
+						}						
+					}else{
+						publishObj[activeIndex].container[i].chartType = [];
+						publishObj[activeIndex].container[i].chartType[index] = chartType;
+					}
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					if(publishObj[activeIndex].layer[i].id == containerId){
+						if(publishObj[activeIndex].layer[i].chartType){
+							if(publishObj[activeIndex].layer[i].chartType[index]){
+								chartType = publishObj[activeIndex].layer[i].chartType[index]
+							}else{
+								publishObj[activeIndex].layer[i].chartType[index] = chartType;
+							}
+						}else{
+							publishObj[activeIndex].layer[i].chartType = [];
+							publishObj[activeIndex].layer[i].chartType[index] = chartType;
+						}
+						flag = true;
+						break;
+					}
+				}
+			}
+			return chartType;
+		}
+		
+		function setChartType(id,chartType){
+			var containerId = $("#"+id).parent().attr("id");
+			var index = $("#"+id).index()-1;
+			var flag = false;
+			for(var i=0;i<publishObj[activeIndex].container.length;i++){
+				if(publishObj[activeIndex].container[i].id == containerId){
+					publishObj[activeIndex].container[i].chartType[index] = chartType;
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					if(publishObj[activeIndex].layer[i].id == containerId){
+						publishObj[activeIndex].layer[i].chartType[index] = chartType;
+						break;
+					}
+				}
+			}
+		}
+		
+		function getStyle(id){
+			var styleObj;
+			var containerId = $("#"+id).parent().attr("id");
+			var index = $("#"+id).index()-1;
+			var flag = false;
+			for(var i=0;i<publishObj[activeIndex].container.length;i++){
+				if(publishObj[activeIndex].container[i].id == containerId){
+					if(publishObj[activeIndex].container[i].styleObj){
+						if(publishObj[activeIndex].container[i].styleObj[index]){
+							styleObj = publishObj[activeIndex].container[i].styleObj[index];
+						}
+					}
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					if(publishObj[activeIndex].layer[i].id == containerId){
+						if(publishObj[activeIndex].layer[i].styleObj){
+							if(publishObj[activeIndex].layer[i].styleObj[index]){
+								styleObj = publishObj[activeIndex].layer[i].styleObj[index];
+							}
+						}
+						flag = true;
+						break;
+					}
+				}
+			}
+			return styleObj;
+		}
+		
+		//获取用户编辑的数据
+		function getData(id){
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				if(editingWidget.data){
+					if(editingWidget.data[editingWidgetIndex]){
+						return editingWidget.data[editingWidgetIndex];
+					}
+				} 
+			}
+			return [];
+		}
+		
+		function getUseUserData(id){
+			var editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			var editingWidgetIndex = editingFrame.index() - 1;
+			var editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				if(editingWidget.useUserData){
+					return editingWidget.useUserData[editingWidgetIndex]?editingWidget.useUserData[editingWidgetIndex]:false;
+				} 
+			}
+			return false;
+		}
+		
+		function getSpeed(id){
+			var editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			var editingWidgetIndex = editingFrame.index() - 1;
+			var editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				if(editingWidget.speed){
+					return editingWidget.speed[editingWidgetIndex]?editingWidget.speed[editingWidgetIndex]:6;
+				} 
+			}
+			return 6;
+		}
+		
+		function selChartCss(id,styleObj){
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				//因为一开始可能没有相关属性，所以必须从子页面获得
+				if(editingWidget.styleObj){
+					if(!editingWidget.styleObj[editingWidgetIndex]){
+						editingWidget.styleObj[editingWidgetIndex] = styleObj;
+					}
+				}else{
+					editingWidget.styleObj = [];
+					editingWidget.styleObj[editingWidgetIndex] = styleObj;
+				}
+				if(!editingWidget.color){
+					editingWidget.color = [];
+				}
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '样式设置',
+				  shade: 0.1,
+				  area: ['600px', '400px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setCss', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setChartCss(color,styleObj){
+			editingWidget.color[editingWidgetIndex] = color;
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.color = color;
+			editingIframe.styleObj = styleObj;
+			editingIframe.createChart();
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		function editChartData(id,data){
+			editingData = data;
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '数据设置',
+				  shade: 0.1,
+				  area: ['600px', '400px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setData', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function editChartDataMore(id,data){
+			editingData = data;
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '数据设置',
+				  shade: 0.1,
+				  area: ['600px', '400px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setDataMore', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setData(dataList){
+			if(!editingWidget.data){
+				editingWidget.data = [];
+			}
+			if(!editingWidget.useUserData){
+				editingWidget.useUserData = [];
+			}
+			editingWidget.data[editingWidgetIndex] = dataList;
+			editingWidget.useUserData[editingWidgetIndex] = true;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.setData(dataList);
+			editingIframe.$("#dataSource").removeClass("btn-default").addClass("btn-success");
+			if($("#"+editingFrame.attr("id")+"_tools").length>0){
+				$("#"+editingFrame.attr("id")+"_tools").find("button").eq(0).removeClass("btn-default").addClass("btn-success");
+			}
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		function editTableData(id,data,speed){
+			editingData = data;
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId);
+			if(!editingWidget.speed){
+				editingWidget.speed = [];
+			}
+			editingWidget.speed[editingWidgetIndex] = speed;
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '数据设置',
+				  shade: 0.1,
+				  area: ['600px', '420px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setTableData', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setTableData(data,speed){
+			if(!editingWidget.data){
+				editingWidget.data = [];
+			}
+			if(!editingWidget.speed){
+				editingWidget.speed = [];
+			}
+			editingWidget.data[editingWidgetIndex] = data;
+			editingWidget.speed[editingWidgetIndex] = speed;
+			if(!editingWidget.useUserData){
+				editingWidget.useUserData = [];
+			}
+			editingWidget.useUserData[editingWidgetIndex] = true;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.res = data;
+			editingIframe.useUserData = true;
+			editingIframe.speed = speed;
+			editingIframe.createTable();
+			if(editingIframe.$("#marquee").length>0){
+				editingIframe.$("#marquee").attr("scrollamount",speed);
+			}
+			if($("#"+editingFrame.attr("id")+"_tools").length>0){
+				$("#"+editingFrame.attr("id")+"_tools").find("button").eq(0).removeClass("btn-default").addClass("btn-success");
+			}
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		function editTableCss(id,styleObj){
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(!editingWidget.styleObj){
+				editingWidget.styleObj = [];
+			}
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '表格样式设置',
+				  shade: 0.1,
+				  area: ['600px', '420px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setTableCss', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setTableCss(styleObj){
+			if(!editingWidget.styleObj){
+				editingWidget.styleObj = [];
+			}
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.styleObj = styleObj;
+			editingIframe.setCss();
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		
+		
+		function editListData(id,data){
+			editingData = data;
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '数据设置',
+				  shade: 0.1,
+				  area: ['600px', '420px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setListData', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function editListCss(id,styleObj){
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(!editingWidget.styleObj){
+				editingWidget.styleObj = [];
+			}
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '表格样式设置',
+				  shade: 0.1,
+				  area: ['600px', '420px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setTableCss', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setListCss(styleObj){
+			if(!editingWidget.styleObj){
+				editingWidget.styleObj = [];
+			}
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			editingWidget.useUserData[editingWidgetIndex] = true;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.styleObj = styleObj;
+			editingIframe.setCss();
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		
+		
+		function editTxt(id,data){
+			editingData = data;
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '数据设置',
+				  shade: 0.1,
+				  area: ['600px', '420px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setCssTxt', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setCssTxt(data,speed){
+			if(!editingWidget.data){
+				editingWidget.data = [];
+			}
+			if(!editingWidget.speed){
+				editingWidget.speed = [];
+			}
+			if(!editingWidget.useUserData){
+				editingWidget.useUserData = [];
+			}
+			editingWidget.data[editingWidgetIndex] = data;
+			editingWidget.speed[editingWidgetIndex] = speed;
+			editingWidget.useUserData[editingWidgetIndex] = true;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.res = data;
+			editingIframe.speed = speed;
+			editingIframe.createScroll();
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		
+		function editTxtCss(id,styleObj){
+			editingFrame = $("#"+id);
+			var containerId = editingFrame.parent().attr("id");
+			editingWidgetIndex = editingFrame.index() - 1;
+			editingWidget = getEditingWidget(containerId)
+			if(editingWidget){
+				//因为一开始可能没有相关属性，所以必须从子页面获得
+				if(editingWidget.styleObj){
+					if(!editingWidget.styleObj[editingWidgetIndex]){
+						editingWidget.styleObj[editingWidgetIndex] = styleObj;
+					}
+				}else{
+					editingWidget.styleObj = [];
+					editingWidget.styleObj[editingWidgetIndex] = styleObj;
+				}
+				if(!editingWidget.colorIndex){
+					editingWidget.colorIndex = [];
+				}
+				editingLayer = layer.open({
+				  type: 2,
+				  title: '样式设置',
+				  shade: 0.1,
+				  area: ['600px', '400px'],
+				  content: '${pageContext.request.contextPath}/manager/menuAction/setInfoCss', //iframe的url
+				  cancel: function(index, layero){ 
+					  editingWidget = null;
+					  editingWidgetIndex = null;
+					}
+				}); 
+			}
+		}
+		
+		function setInfoCss(styleObj){
+			if(!editingWidget.styleObj){
+				editingWidget.styleObj = [];
+			}
+			editingWidget.styleObj[editingWidgetIndex] = styleObj;
+			var editingIframe = editingFrame[0].contentWindow;
+			editingIframe.styleObj = styleObj;
+			editingIframe.createScroll();
+			layer.close(editingLayer);
+			editingWidget = null;
+			editingWidgetIndex = null;
+		}
+		
+		function getEditingWidget(containerId){
+			var obj;
+			for(var i=0;i<publishObj[activeIndex].container.length;i++){
+				if(publishObj[activeIndex].container[i].id == containerId){
+					obj = publishObj[activeIndex].container[i];
+					break;
+				}
+			}
+			if(!obj){
+				for(var i=0;i<publishObj[activeIndex].layer.length;i++){
+					if(publishObj[activeIndex].layer[i].id == containerId){
+						obj = publishObj[activeIndex].layer[i];
+						break;
+					}
+				}
+			}
+			return obj;
+		}
+		
+		function cloneTools(frameId,id){
+			var frame = $("#"+frameId);
+			frame.parent().find(".container-move").eq(0).find(".frame-tools").hide();
+			if($("#"+frameId+"_tools").length==0){
+				frame.parent().find(".container-move").eq(0).append('<div class="frame-tools" id="'+frameId+'_tools" style="display:none;">'+frame[0].contentWindow.$("#"+id).html()+'</div>');
+			}
+			if(!$("#editOrView").find("span").eq(0).hasClass('glyphicon-cog')){
+				frame.parent().find(".container-move").children().last().show();
+			}
+			$("#"+frameId+"_tools").find("button").on("click",function(){
+				if($(this).index()==0){
+					$(this).toggleClass("btn-default").toggleClass("btn-success");
+				}
+				var fid=$(this).parent().attr("id").split("_")[0];
+				var id = $(this).attr("id");
+				var frame =  $("#"+frameId);
+				frame[0].contentWindow.$("#"+id).trigger("click");
+			});
+			$("#"+frameId+"_tools").find("select").on("change",function(){
+				var fid=$(this).parent().attr("id").split("_")[0];
+				var id = $(this).attr("id");
+				var frame =  $("#"+frameId);
+				frame[0].contentWindow.$("#"+id).val($(this).val());
+				frame[0].contentWindow.$("#"+id).trigger("change");
+			});
+		}
+		
+		function showTools(frameId){
+			$("#"+frameId).show();
+		}
+		
+		function hideTools(){
+			$("#"+frameId).hide();
+		}
+  </script>
+</html>

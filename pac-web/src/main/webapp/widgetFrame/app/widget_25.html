@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+	<link rel="stylesheet" href="../css/bootstrap.min.css">
+	<link rel="stylesheet" href="../css/main_component_manage.css">
+	<link rel="stylesheet" href="../css/edit.css" id="editCss" />
+	
+	<script type="text/javascript" src="../js/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../js/layer/layer.js"></script>
+	<script type="text/javascript" src="../js/laypage/laypage.js"></script>
+	<script type="text/javascript" src="../js/tool.js"></script>
+    <!--[if lt IE 9]>
+		<style type="text/css">
+			.layui-layer{
+				border: 1px solid #ccc;
+			}
+		</style>
+      	<script src="../js/html5shiv.min.js"></script>
+      	<script src="../js/respond.min.js"></script>
+	<![endif]-->
+  </head>
+
+  <body>
+    <div class="row">
+    	<div class="col-xs-8">
+    		<input type="text" class="form-control" size="20" placeholder="请输入关键字">
+    	</div>
+    	<div class="col-xs-4">
+    		<button class="btn btn-default">搜索</button>
+    	</div>
+    </div>
+    <div class="row" style="margin-top: 20px;">
+    	<div class="col-xs-12">
+	    	<table class="table ajax-data" id="dataTable">
+	    		<tbody><tr>
+	    			<th colname="city" class="">列1</th>
+	    			<th colname="sex" class="">列2</th>
+	    			<th colname="name" class="">列3</th>
+	    		</tr>
+	    	</tbody></table>
+	    </div>
+	    <div class="col-xs-12" style="text-align:right" id="page"></div>
+	</div>
+  
+  <script type="text/javascript" id="configJs">var config={"url":"http://192.168.1.209:8080/pac-web/server/interface/testSelect"};</script>
+  <script type="text/javascript" id="mainJs">
+  	$(document).on("ready",function(){
+  		$("button").eq(0).on("click",function(){
+  			fillData(config.url,$("#dataTable"),$("#dataTable"),1);
+  		});
+  	});
+  </script>
+  <script type="text/javascript" src="../js/edit.js" id="editJs"></script>
+</body>
+</html>

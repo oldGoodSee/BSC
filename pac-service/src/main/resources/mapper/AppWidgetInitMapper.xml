@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bocom.dao.AppWidgetInitDao">
+    <resultMap id="BaseResultMap" type="com.bocom.domain.pac.AppWidgetInitInfo">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="widgetName" property="widgetName" jdbcType="VARCHAR"/>
+        <result column="folderName" property="folderName" jdbcType="VARCHAR"/>
+        <result column="htmlName" property="htmlName" jdbcType="VARCHAR"/>
+        <result column="path" property="path" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="createUserID" property="createUserName" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="createIp" property="createIp" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="wrmId" property="wrmId" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, widgetName, folderName, htmlName, path, status, createUserID, createTime, createIp,
+    version, wrmId,type
+  </sql>
+    <select id="selectById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from app_widget_init
+        where wrmId = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from app_widget_init
+    where wrmId = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.bocom.domain.pac.AppWidgetInitInfo">
+    insert into app_widget_init (id, widgetName, folderName,
+    htmlName, path, status,
+    createUserID, createTime, createIp,
+    version, wrmId,type)
+    values (#{id,jdbcType=INTEGER}, #{widgetName,jdbcType=VARCHAR}, #{folderName,jdbcType=VARCHAR},
+    #{htmlName,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+    #{createUserName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createIp,jdbcType=VARCHAR},
+    #{version,jdbcType=VARCHAR}, #{wrmId,jdbcType=INTEGER}), #{type,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertWidgetInit" parameterType="com.bocom.domain.pac.AppWidgetInitInfo">
+        insert into app_widget_init
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="widgetName != null">
+                widgetName,
+            </if>
+            <if test="folderName != null">
+                folderName,
+            </if>
+            <if test="htmlName != null">
+                htmlName,
+            </if>
+            <if test="path != null">
+                path,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="createUserName != null">
+                createUserID,
+            </if>
+            <if test="createTime != null">
+                createTime,
+            </if>
+            <if test="createIp != null">
+                createIp,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="wrmId != null">
+                wrmId,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="widgetName != null">
+                #{widgetName,jdbcType=VARCHAR},
+            </if>
+            <if test="folderName != null">
+                #{folderName,jdbcType=VARCHAR},
+            </if>
+            <if test="htmlName != null">
+                #{htmlName,jdbcType=VARCHAR},
+            </if>
+            <if test="path != null">
+                #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createUserName != null">
+                #{createUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createIp != null">
+                #{createIp,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="wrmId != null">
+                #{wrmId,jdbcType=INTEGER},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.bocom.domain.pac.AppWidgetInitInfo">
+        update app_widget_init
+        <set>
+            <if test="widgetName != null">
+                widgetName = #{widgetName,jdbcType=VARCHAR},
+            </if>
+            <if test="folderName != null">
+                folderName = #{folderName,jdbcType=VARCHAR},
+            </if>
+            <if test="htmlName != null">
+                htmlName = #{htmlName,jdbcType=VARCHAR},
+            </if>
+            <if test="path != null">
+                path = #{path,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="createUserName != null">
+                createUserID = #{createUserName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                createTime = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createIp != null">
+                createIp = #{createIp,jdbcType=VARCHAR},
+            </if>
+            <if test="version != null">
+                version = #{version,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where wrmId = #{wrmId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.bocom.domain.pac.AppWidgetInitInfo">
+    update app_widget_init
+    set widgetName = #{widgetName,jdbcType=VARCHAR},
+      folderName = #{folderName,jdbcType=VARCHAR},
+      htmlName = #{htmlName,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      createUserID = #{createUserName,jdbcType=VARCHAR},
+      createTime = #{createTime,jdbcType=TIMESTAMP},
+      createIp = #{createIp,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      wrmId = #{wrmId,jdbcType=INTEGER},
+     type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
